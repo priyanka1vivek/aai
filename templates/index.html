@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Sentinel · NSL-KDD Detection Lab</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/"
+        >◈ <span>SENTINEL<small>NETWORK INTELLIGENCE LAB</small></span></a
+      ><span id="backend-status" class="pill">Connecting…</span>
+    </header>
+    <main>
+      <div class="intro">
+        <span class="eyebrow">NSL-KDD / RESEARCH WORKSPACE</span>
+        <h1>See the signal.<br /><span>Understand the decision.</span></h1>
+        <p>
+          Explore recorded connections, feature selection, and the evidence
+          behind your detector.
+        </p>
+      </div>
+      <nav role="tablist" aria-label="Workspace">
+        <button
+          role="tab"
+          aria-selected="true"
+          aria-controls="detection"
+          id="tab-detection"
+          data-tab="detection"
+        >
+          01 <span>Detection Console</span></button
+        ><button
+          role="tab"
+          aria-selected="false"
+          aria-controls="optimization"
+          id="tab-optimization"
+          data-tab="optimization"
+        >
+          02 <span>GA / PSO Optimization Lab</span></button
+        ><button
+          role="tab"
+          aria-selected="false"
+          aria-controls="analyst"
+          id="tab-analyst"
+          data-tab="analyst"
+        >
+          03 <span>What-if & Challenge</span></button
+        ><button
+          role="tab"
+          aria-selected="false"
+          aria-controls="evidence"
+          id="tab-evidence"
+          data-tab="evidence"
+        >
+          04 <span>Results & Evidence</span>
+        </button>
+      </nav>
+      <div class="actions"><button id="refresh-results">Refresh saved results</button><span id="refresh-status" class="note" aria-live="polite">Metrics come from backend evaluation reports · checked every 30 seconds.</span></div>
+      <div id="detector-error" class="notice error" role="alert" hidden></div>
+      <div id="global-error" class="notice error" role="alert" hidden></div>
+      <section id="detection" role="tabpanel" aria-labelledby="tab-detection">
+        <div class="section-title">
+          <div>
+            <span class="eyebrow">CALIBRATED DETECTOR</span>
+            <h2>Calibrated PSO detector — exploratory NSL-KDD evaluation.</h2>
+          </div>
+          <span class="pill">Saved threshold <b id="saved-threshold">0.01</b></span>
+        </div>
+        <div id="headline-metrics" class="metrics">Loading saved metrics…</div>
+        <p class="note">
+          Attack scores are model probability estimates, not calibrated
+          certainty. This exploratory evaluation does not establish deployment
+          performance.
+        </p>
+        <div class="columns">
+          <article class="card">
+            <div class="card-title">
+              <h3>Inspect a connection</h3>
+              <span class="pill">Manual entry</span>
+            </div>
+            <p>Start with a real test sample, then edit its inputs.</p>
+            <div class="actions">
+              <button data-sample="normal" data-target="manual">
+                Normal example</button
+              ><button data-sample="attack" data-target="manual">
+                Attack example</button
+              ><label
+                >Threshold<input
+                  id="threshold"
+                  type="number"
+                  min="0.001"
+                  max="0.999"
+                  step="0.001"
+                  value="0.01"
+              /></label>
+            </div>
+            <form id="manual-form">
+              <div id="manual-fields" class="fields">Loading real sample…</div>
+              <button class="primary" type="submit" data-detector>
+                Classify connection →
+              </button>
+            </form>
+            <div id="manual-output" class="output" aria-live="polite"></div>
+          </article>
+          <div>
+            <article class="card">
+              <h3>Batch CSV analysis</h3>
+              <p>
+                Header row with original feature names · up to 5,000 rows / 5
+                MiB. Label and difficulty columns are ignored.
+              </p>
+              <form id="csv-form">
+                <label class="upload"
+                  >Choose traffic CSV<input
+                    id="csv-file"
+                    type="file"
+                    accept=".csv,text/csv"
+                    required /></label
+                ><button class="primary" data-detector>Analyze CSV →</button>
+              </form>
+              <div id="csv-output" class="output" aria-live="polite"></div>
+            </article>
+            <article class="card">
+              <div class="card-title">
+                <h3>Recorded test traffic</h3>
+                <span class="live-dot">TEST-DATA REPLAY</span>
+              </div>
+              <p>Playback of recorded NSL-KDD test connections.</p>
+              <div class="actions">
+                <button id="replay-start" class="primary" data-detector>
+                  Start</button
+                ><button id="replay-pause" disabled>Pause</button
+                ><button id="replay-reset">Reset</button
+                ><label
+                  >Speed<select id="replay-speed">
+                    <option value="1000">1×</option>
+                    <option value="500">2×</option>
+                    <option value="200">5×</option>
+                  </select></label
+                >
+              </div>
+              <p id="replay-count">0 connections · 0 attacks · 0 correct</p>
+              <div id="replay-error" role="alert"></div>
+              <div
+                id="replay-output"
+                class="scroll output"
+                aria-live="polite"
+              ></div>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section
+        id="optimization"
+        role="tabpanel"
+        aria-labelledby="tab-optimization"
+        hidden
+      >
+        <div class="section-title">
+          <div>
+            <span class="eyebrow">SEARCH WORKSPACE</span>
+            <h2>Find a useful subset. Inspect the tradeoffs.</h2>
+          </div>
+        </div>
+        <p>
+          Heuristic search on validation data; a globally optimal subset is not
+          guaranteed. Training starts only when you choose Run.
+        </p>
+        <div class="columns">
+          <article class="card">
+            <h3>Search configuration</h3>
+            <form id="search-form">
+              <label
+                >Algorithm<select id="algorithm" name="algorithm">
+                  <option value="ga">Genetic algorithm (GA)</option>
+                  <option value="pso">Particle swarm (PSO)</option>
+                </select></label
+              >
+              <div id="search-controls" class="fields"></div>
+              <div id="ga-controls" class="fields"></div>
+              <div id="pso-controls" class="fields" hidden></div>
+              <h4>Initial chromosomes / particles</h4>
+              <p>
+                Click inputs to build a 41-bit mask. Add up to the population
+                size; remaining candidates are generated by the backend.
+              </p>
+              <div id="feature-grid" class="feature-grid"></div>
+              <div class="actions">
+                <span id="mask-count">0 / 41</span
+                ><button id="add-mask" type="button">Add mask</button
+                ><button id="clear-mask" type="button">Clear</button>
+              </div>
+              <div id="mask-list"></div>
+              <div class="actions">
+                <button id="run-search" class="primary">Run search →</button
+                ><button type="button" id="cancel-job" disabled>Cancel</button>
+              </div>
+            </form>
+            <div id="search-error" role="alert"></div>
+          </article>
+          <article class="card">
+            <h3>Validation convergence</h3>
+            <p id="job-state" aria-live="polite">
+              No active search. Iteration 0 is initialization.
+            </p>
+            <div id="fitness-chart"></div>
+            <div id="validation-chart"></div>
+            <div id="job-metrics" class="metrics compact"></div>
+            <div id="selected-search"></div>
+            <button id="finalize-job" class="primary" hidden>
+              Train final model from completed search
+            </button>
+            <div id="final-output"></div>
+          </article>
+        </div>
+      </section>
+      <section
+        id="analyst"
+        role="tabpanel"
+        aria-labelledby="tab-analyst"
+        hidden
+      >
+        <div class="section-title">
+          <div>
+            <span class="eyebrow">SENSITIVITY & ANALYST PRACTICE</span>
+            <h2>Change an input. Challenge your intuition.</h2>
+          </div>
+        </div>
+        <div class="actions modes">
+          <button id="mode-whatif" aria-pressed="true">What-if</button
+          ><button id="mode-challenge" aria-pressed="false">
+            Analyst Challenge
+          </button>
+        </div>
+        <article id="whatif-panel" class="card">
+          <h3>Synthetic scenario</h3>
+          <p>
+            Edit a real connection and compare with its original prediction.
+            Edited combinations may be physically inconsistent and have no
+            verified true label.
+          </p>
+          <div class="actions">
+            <button data-sample="normal" data-target="whatif">
+              Normal example</button
+            ><button data-sample="attack" data-target="whatif">
+              Attack example
+            </button>
+          </div>
+          <form id="whatif-form">
+            <div id="whatif-fields" class="fields"></div>
+            <button class="primary" data-detector>
+              Compare original / modified →
+            </button>
+          </form>
+          <div id="whatif-output" class="output" aria-live="polite"></div>
+        </article>
+        <article id="challenge-panel" class="card" hidden>
+          <div class="card-title">
+            <h3>Normal or attack?</h3>
+            <span id="challenge-score" class="pill">Your score: 0 / 0</span>
+          </div>
+          <p>
+            Inspect the model's selected inputs. The true label and model answer
+            stay hidden until you submit your guess.
+          </p>
+          <button id="new-challenge" class="primary" data-detector>
+            New challenge
+          </button>
+          <div id="challenge-values"></div>
+          <div class="actions">
+            <button id="guess-normal" disabled>Normal</button
+            ><button id="guess-attack" disabled>Attack</button>
+          </div>
+          <div id="challenge-output" aria-live="polite"></div>
+          <p class="note">
+            Missed attack: an attack guessed normal. False alarm: a normal
+            connection guessed attack.
+          </p>
+        </article>
+      </section>
+      <section
+        id="evidence"
+        role="tabpanel"
+        aria-labelledby="tab-evidence"
+        hidden
+      >
+        <div class="section-title">
+          <div>
+            <span class="eyebrow">SAVED EVALUATION</span>
+            <h2>Results, with the evidence attached.</h2>
+          </div>
+          <a class="button primary" id="export-csv" href="/api/export"
+            >Export models CSV ↓</a
+          >
+        </div>
+        <article class="card">
+          <h3>Calibrated detector</h3>
+          <div id="evidence-metrics" class="metrics"></div>
+          <div id="detector-evidence"></div>
+        </article>
+        <details class="card">
+          <summary>
+            Original five-seed benchmark <span>Expand comparison ↗</span>
+          </summary>
+          <p>
+            Original fixed-split full-feature, chi-square, GA and PSO results.
+            Means ± standard deviations reflect optimizer variability, not
+            independent datasets.
+          </p>
+          <div id="benchmark">Loading saved benchmark…</div>
+          <h3>Feature-selection frequency</h3>
+          <label
+            >Method<select id="frequency-method">
+              <option value="ga">GA</option>
+              <option value="pso">PSO</option>
+              <option value="chi_square">Chi-square</option>
+              <option value="full">Full-feature</option>
+            </select></label
+          >
+          <div id="frequency-chart"></div>
+          <div id="benchmark-note"></div>
+        </details>
+        <article class="card">
+          <h3>Attack-type detection</h3>
+          <p>Support counts matter, especially for rare attacks.</p>
+          <div id="attack-breakdown"></div>
+        </article>
+        <article class="card">
+          <h3>Threshold tradeoffs</h3>
+          <p>
+            Exploratory test-set curve. Choose formal thresholds using
+            validation data. Viewing this curve does not change the saved 0.01
+            operating point.
+          </p>
+          <button id="load-thresholds" data-detector>
+            Load threshold evidence
+          </button>
+          <div id="threshold-output"></div>
+        </article>
+        <article class="card">
+          <h3>Saved model inventory</h3>
+          <div id="model-inventory"></div>
+        </article>
+      </section>
+      <footer>
+        NSL-KDD research lab
+        <span>Recorded data. Measured results. Exploratory evaluation.</span>
+      </footer>
+    </main>
+  </body>
+</html>

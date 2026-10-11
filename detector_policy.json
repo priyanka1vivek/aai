@@ -1,7 +1,7 @@
 {
   "source_experiment_id": "31e9b36582044da995b33f1b20eb6c92",
   "source_model_id": "99af1769fd4d4e0a831a0bd435890d60",
-  "model_id": "ddfca6f3f2704336be92f875dbabdfd7",
+  "model_id": "b8c6bf4db26f44b2b557f99114f03999",
   "algorithm": "pso_calibrated",
   "attack_threshold": 0.01,
   "expected_test_metrics": {
