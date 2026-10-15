@@ -14,52 +14,48 @@
       ><span id="backend-status" class="pill">Connecting…</span>
     </header>
     <main>
-      <nav role="tablist" aria-label="Workspace">
-        <button
-          role="tab"
-          aria-selected="true"
-          aria-controls="detection"
-          id="tab-detection"
-          data-tab="detection"
-        >
-          01 <span>Detection Console</span></button
-        ><button
-          role="tab"
-          aria-selected="false"
-          aria-controls="optimization"
-          id="tab-optimization"
-          data-tab="optimization"
-        >
-          02 <span>GA / PSO Optimization Lab</span></button
-        ><button
-          role="tab"
-          aria-selected="false"
-          aria-controls="analyst"
-          id="tab-analyst"
-          data-tab="analyst"
-        >
-          03 <span>What-if & Challenge</span></button
-        ><button
-          role="tab"
-          aria-selected="false"
-          aria-controls="evidence"
-          id="tab-evidence"
-          data-tab="evidence"
-        >
-          04 <span>Results & Evidence</span>
-        </button>
+      <nav role="tablist" aria-label="Project workbench">
+        <button role="tab" aria-selected="true" aria-controls="overview" id="tab-overview" data-tab="overview">01 <span>Project Overview</span></button>
+        <button role="tab" aria-selected="false" aria-controls="optimization" id="tab-optimization" data-tab="optimization">02 <span>Run GA / PSO</span></button>
+        <button role="tab" aria-selected="false" aria-controls="detection" id="tab-detection" data-tab="detection">03 <span>Test a Model</span></button>
+        <button role="tab" aria-selected="false" aria-controls="evidence" id="tab-evidence" data-tab="evidence">04 <span>Results & Evidence</span></button>
       </nav>
       <div class="intro">
-        <span class="eyebrow">NSL-KDD / RESEARCH WORKSPACE</span>
-        <h1>See the signal.<br /><span>Understand the decision.</span></h1>
-        <p>
-          Explore recorded connections, feature selection, and the evidence
-          behind your detector.
-        </p>
+        <span class="eyebrow">METAHEURISTIC FEATURE SELECTION · NSL-KDD</span>
+        <h1>Fewer inputs.<br /><span>A measured tradeoff.</span></h1>
+        <p>Use GA and PSO to search 41 network features, then compare the resulting Random Forest detectors against full features and chi-square selection.</p>
       </div>
       <div id="detector-error" class="notice error" role="alert" hidden></div>
       <div id="global-error" class="notice error" role="alert" hidden></div>
-      <section id="detection" role="tabpanel" aria-labelledby="tab-detection">
+      <section id="overview" role="tabpanel" aria-labelledby="tab-overview">
+        <div class="overview-lead">
+          <span class="eyebrow">THE PROJECT QUESTION</span>
+          <h2>Can we classify NSL-KDD connections using fewer than 41 original features?</h2>
+          <p>Each candidate is a 41-bit feature mask. GA or binary PSO proposes masks; a Random Forest scores them on validation data. We compare the final models on held-out test records.</p>
+        </div>
+        <div class="study-steps">
+          <div><b>01 / Search</b><strong>GA or PSO selects inputs</strong><span>Explore candidate feature subsets under a set budget.</span></div>
+          <div><b>02 / Evaluate</b><strong>Random Forest scores each subset</strong><span>Balance validation performance with feature count.</span></div>
+          <div><b>03 / Compare</b><strong>Test against baselines</strong><span>Inspect held-out results, timing and run variability.</span></div>
+        </div>
+        <article class="card study-comparison">
+          <div class="card-title"><div><span class="eyebrow">RECORDED FIVE-SEED STUDY</span><h3>Explore the methods</h3></div>
+            <label>Method<select id="overview-method">
+              <option value="ga">Genetic Algorithm</option><option value="pso">Particle Swarm Optimization</option>
+              <option value="full">All 41 features</option><option value="chi_square">Chi-square baseline</option>
+            </select></label>
+          </div>
+          <div id="overview-summary" aria-live="polite">Loading the recorded study…</div>
+          <div id="overview-features"></div>
+          <p class="note">These are measured historical NSL-KDD results. GA/PSO values summarize five optimizer seeds on a fixed split; they are not an independent deployment estimate.</p>
+        </article>
+        <div class="overview-actions">
+          <button class="primary" id="overview-run">Run your own GA / PSO search →</button>
+          <button id="overview-evidence">Inspect the full comparison →</button>
+          <button id="overview-demo">Try a saved detector →</button>
+        </div>
+      </section>
+      <section id="detection" role="tabpanel" aria-labelledby="tab-detection" hidden>
         <div class="section-title">
           <div>
             <span class="eyebrow" id="detector-eyebrow">DETECTOR</span>
@@ -152,83 +148,9 @@
             </div>
           </div>
         </details>
-      </section>
-      <section
-        id="optimization"
-        role="tabpanel"
-        aria-labelledby="tab-optimization"
-        hidden
-      >
-        <div class="section-title">
-          <div>
-            <span class="eyebrow">SEARCH WORKSPACE</span>
-            <h2>Find a useful subset. Inspect the tradeoffs.</h2>
-          </div>
-        </div>
-        <p>
-          Heuristic search on validation data; a globally optimal subset is not
-          guaranteed. Training starts only when you choose Run.
-        </p>
-        <div class="columns">
-          <article class="card">
-            <h3>Search configuration</h3>
-            <form id="search-form">
-              <label
-                >Algorithm<select id="algorithm" name="algorithm">
-                  <option value="ga">Genetic algorithm (GA)</option>
-                  <option value="pso">Particle swarm (PSO)</option>
-                </select></label
-              >
-              <div id="search-controls" class="fields"></div>
-              <div id="ga-controls" class="fields"></div>
-              <div id="pso-controls" class="fields" hidden></div>
-              <h4>Initial chromosomes / particles</h4>
-              <p>
-                Click inputs to build a 41-bit mask. Add up to the population
-                size; remaining candidates are generated by the backend.
-              </p>
-              <div id="feature-grid" class="feature-grid"></div>
-              <div class="actions">
-                <span id="mask-count">0 / 41</span
-                ><button id="add-mask" type="button">Add mask</button
-                ><button id="clear-mask" type="button">Clear</button>
-              </div>
-              <div id="mask-list"></div>
-              <div class="actions">
-                <button id="run-search" class="primary">Run search →</button
-                ><button type="button" id="cancel-job" disabled>Cancel</button>
-              </div>
-            </form>
-            <div id="search-error" role="alert"></div>
-          </article>
-          <article class="card">
-            <h3>Validation convergence</h3>
-            <p id="job-state" aria-live="polite">
-              No active search. Iteration 0 is initialization.
-            </p>
-            <div id="fitness-chart"></div>
-            <div id="validation-chart"></div>
-            <div id="job-metrics" class="metrics compact"></div>
-            <div id="selected-search"></div>
-            <button id="finalize-job" class="primary" hidden>
-              Train final model from completed search
-            </button>
-            <div id="final-output"></div>
-          </article>
-        </div>
-      </section>
-      <section
-        id="analyst"
-        role="tabpanel"
-        aria-labelledby="tab-analyst"
-        hidden
-      >
-        <div class="section-title">
-          <div>
-            <span class="eyebrow">SENSITIVITY & ANALYST PRACTICE</span>
-            <h2>Change an input. Challenge your intuition.</h2>
-          </div>
-        </div>
+        <details class="card secondary-tools">
+          <summary>More exploration: what-if comparison and analyst challenge</summary>
+          <p class="note">Optional exercises for testing model sensitivity and your own judgement on recorded examples.</p>
         <div class="actions modes">
           <button id="mode-whatif" aria-pressed="true">What-if</button
           ><button id="mode-challenge" aria-pressed="false">
@@ -280,6 +202,74 @@
             connection guessed attack.
           </p>
         </article>
+        </details>
+      </section>
+      <section
+        id="optimization"
+        role="tabpanel"
+        aria-labelledby="tab-optimization"
+        hidden
+      >
+        <div class="section-title">
+          <div>
+            <span class="eyebrow">SEARCH WORKSPACE</span>
+            <h2>Find a useful subset. Inspect the tradeoffs.</h2>
+          </div>
+        </div>
+        <p>
+          Choose an algorithm and budget, then watch the measured validation fitness change. Candidate subsets are best-found within the run, not proven global optima.
+        </p>
+        <div class="columns">
+          <article class="card">
+            <h3>Search configuration</h3>
+            <form id="search-form">
+              <label
+                >Algorithm<select id="algorithm" name="algorithm">
+                  <option value="ga">Genetic algorithm (GA)</option>
+                  <option value="pso">Particle swarm (PSO)</option>
+                </select></label
+              >
+              <div id="quick-controls" class="fields compact-controls"></div>
+              <details class="advanced-fields">
+                <summary>Advanced search settings and starting masks</summary>
+                <div id="search-controls" class="fields"></div>
+                <div id="ga-controls" class="fields"></div>
+                <div id="pso-controls" class="fields" hidden></div>
+              <h4>Initial chromosomes / particles</h4>
+              <p>
+                Click inputs to build a 41-bit mask. Add up to the population
+                size; remaining candidates are generated by the backend.
+              </p>
+              <div id="feature-grid" class="feature-grid"></div>
+              <div class="actions">
+                <span id="mask-count">0 / 41</span
+                ><button id="add-mask" type="button">Add mask</button
+                ><button id="clear-mask" type="button">Clear</button>
+              </div>
+              <div id="mask-list"></div>
+              </details>
+              <div class="actions">
+                <button id="run-search" class="primary">Run search →</button
+                ><button type="button" id="cancel-job" disabled>Cancel</button>
+              </div>
+            </form>
+            <div id="search-error" role="alert"></div>
+          </article>
+          <article class="card">
+            <h3>Validation convergence</h3>
+            <p id="job-state" aria-live="polite">
+              No active search. Iteration 0 is initialization.
+            </p>
+            <div id="fitness-chart"></div>
+            <div id="validation-chart"></div>
+            <div id="job-metrics" class="metrics compact"></div>
+            <div id="selected-search"></div>
+            <button id="finalize-job" class="primary" hidden>
+              Train final model from completed search
+            </button>
+            <div id="final-output"></div>
+          </article>
+        </div>
       </section>
       <section
         id="evidence"
@@ -305,7 +295,7 @@
           <div id="evidence-metrics" class="metrics"></div>
           <div id="detector-evidence"></div>
         </article>
-        <details class="card">
+        <details class="card" open>
           <summary>
             Original five-seed benchmark <span>Expand comparison ↗</span>
           </summary>
