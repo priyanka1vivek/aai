@@ -4,6 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Sentinel · NSL-KDD Detection Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/static/style.css" />
     <script src="/static/app.js" defer></script>
   </head>
@@ -22,8 +25,8 @@
       </nav>
       <div class="intro">
         <span class="eyebrow">METAHEURISTIC FEATURE SELECTION · NSL-KDD</span>
-        <h1>Fewer inputs.<br /><span>A measured tradeoff.</span></h1>
-        <p>Use GA and PSO to search 41 network features, then compare the resulting Random Forest detectors against full features and chi-square selection.</p>
+        <h1>Find the signal.<br /><span>Reduce the noise.</span></h1>
+        <p>Explore how genetic algorithms and particle swarm optimization select network features for an NSL-KDD intrusion detector.</p>
       </div>
       <div id="detector-error" class="notice error" role="alert" hidden></div>
       <div id="global-error" class="notice error" role="alert" hidden></div>
@@ -39,15 +42,15 @@
           <div><b>03 / Compare</b><strong>Test against baselines</strong><span>Inspect held-out results, timing and run variability.</span></div>
         </div>
         <article class="card study-comparison">
-          <div class="card-title"><div><span class="eyebrow">RECORDED FIVE-SEED STUDY</span><h3>Explore the methods</h3></div>
+          <div class="card-title"><div><span class="eyebrow">FEATURE SELECTION MAP</span><h3>See what each method keeps</h3><p>Each tile is one original network feature. Change the method to explore the saved selection patterns.</p></div>
             <label>Method<select id="overview-method">
               <option value="ga">Genetic Algorithm</option><option value="pso">Particle Swarm Optimization</option>
               <option value="full">All 41 features</option><option value="chi_square">Chi-square baseline</option>
             </select></label>
           </div>
-          <div id="overview-summary" aria-live="polite">Loading the recorded study…</div>
+          <div id="overview-summary" aria-live="polite">Loading the feature map…</div>
           <div id="overview-features"></div>
-          <p class="note">These are measured historical NSL-KDD results. GA/PSO values summarize five optimizer seeds on a fixed split; they are not an independent deployment estimate.</p>
+          <p class="note">The map comes from the recorded study. For GA and PSO, tile intensity shows how often a feature was selected across five seeds; it does not show detector accuracy.</p>
         </article>
         <div class="overview-actions">
           <button class="primary" id="overview-run">Run your own GA / PSO search →</button>
@@ -294,6 +297,13 @@
           <h3 id="evidence-title">Detector evidence</h3>
           <div id="evidence-metrics" class="metrics"></div>
           <div id="detector-evidence"></div>
+        </article>
+        <article class="card" id="historical-card">
+          <span class="eyebrow">HISTORICAL CALIBRATED CONFIGURATION</span>
+          <h3>Recorded PSO detector</h3>
+          <p id="historical-note">Loading saved detector provenance…</p>
+          <div id="historical-metrics" class="metrics"></div>
+          <p class="note">These recorded KDDTest+ metrics belong to the original calibrated model. Its binary artifact is not published; a locally retrained demo is a different model. The historical evaluation is exploratory after prior inspection of this test set.</p>
         </article>
         <details class="card" open>
           <summary>
