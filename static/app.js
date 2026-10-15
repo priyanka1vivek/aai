@@ -126,6 +126,16 @@ function renderDetectorStatus() {
   $("historical-metrics").innerHTML = p?.historical_expected_test_metrics || p?.expected_test_metrics
     ? metricCards(p.historical_expected_test_metrics || p.expected_test_metrics, p.historical_validation_calibration?.feature_count ?? p.validation_calibration?.feature_count ?? 11)
     : "Historical evaluation metadata unavailable.";
+  const historical = p?.historical_expected_test_metrics || p?.expected_test_metrics;
+  const active = currentModel()?.test_metrics;
+  const reproduced = !!(demo && historical && active &&
+    ["accuracy", "recall", "f1", "false_alarm_rate"].every(key =>
+      Number.isFinite(active[key]) && Math.abs(active[key] - historical[key]) < 1e-10));
+  $("historical-card").hidden = reproduced || !!p?.historical_available;
+  $("matching-report-note").hidden = !reproduced;
+  $("matching-report-note").textContent = reproduced
+    ? "This newly trained model reproduced the historical report's measured scores on the same KDDTest+ records. It is a separate saved model; the original binary is unavailable."
+    : "";
 }
 function currentModel() {
   return state.models.find((m) => m.model_id === state.policy?.model_id);
