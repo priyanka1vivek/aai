@@ -63,8 +63,8 @@
       <section id="detection" role="tabpanel" aria-labelledby="tab-detection">
         <div class="section-title">
           <div>
-            <span class="eyebrow">CALIBRATED DETECTOR</span>
-            <h2>Calibrated PSO detector — exploratory NSL-KDD evaluation.</h2>
+            <span class="eyebrow" id="detector-eyebrow">DETECTOR</span>
+            <h2 id="detector-title">Loading detector status…</h2>
           </div>
           <span class="pill">Saved threshold <b id="saved-threshold">0.01</b></span>
         </div>
@@ -296,7 +296,7 @@
           >
         </div>
         <article class="card">
-          <h3>Calibrated detector</h3>
+          <h3 id="evidence-title">Detector evidence</h3>
           <div id="evidence-metrics" class="metrics"></div>
           <div id="detector-evidence"></div>
         </article>
@@ -329,11 +329,7 @@
         </article>
         <article class="card">
           <h3>Threshold tradeoffs</h3>
-          <p>
-            Exploratory test-set curve. Choose formal thresholds using
-            validation data. Viewing this curve does not change the saved 0.01
-            operating point.
-          </p>
+          <p id="threshold-note">Exploratory test-set curve for the selected model.</p>
           <button id="load-thresholds" data-detector>
             Load threshold evidence
           </button>
