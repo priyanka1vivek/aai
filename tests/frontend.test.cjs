@@ -29,6 +29,9 @@ test('navigation panels, primary controls and optional tools are present', () =>
     assert.match(markup, new RegExp(`data-tab="${id}"`));
   }
   assert.match(markup, /id="overview"[^>]*aria-labelledby="tab-overview"/);
+  assert.doesNotMatch(markup, /Original five-seed benchmark/);
+  assert.doesNotMatch(markup, /id="benchmark"/);
+  assert.match(markup, /results\/experiment_31e9b36582044da995b33f1b20eb6c92\.json/);
 });
 
 test('overview uses recorded feature frequencies without promoting evaluation scores', () => {
