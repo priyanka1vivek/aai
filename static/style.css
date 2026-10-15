@@ -43,7 +43,7 @@ header {
 .brand small {
   display: block;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 2px;
 }
 main {
