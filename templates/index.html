@@ -14,14 +14,6 @@
       ><span id="backend-status" class="pill">Connecting…</span>
     </header>
     <main>
-      <div class="intro">
-        <span class="eyebrow">NSL-KDD / RESEARCH WORKSPACE</span>
-        <h1>See the signal.<br /><span>Understand the decision.</span></h1>
-        <p>
-          Explore recorded connections, feature selection, and the evidence
-          behind your detector.
-        </p>
-      </div>
       <nav role="tablist" aria-label="Workspace">
         <button
           role="tab"
@@ -57,7 +49,14 @@
           04 <span>Results & Evidence</span>
         </button>
       </nav>
-      <div class="actions"><button id="refresh-results">Refresh saved results</button><span id="refresh-status" class="note" aria-live="polite">Metrics come from backend evaluation reports · checked every 30 seconds.</span></div>
+      <div class="intro">
+        <span class="eyebrow">NSL-KDD / RESEARCH WORKSPACE</span>
+        <h1>See the signal.<br /><span>Understand the decision.</span></h1>
+        <p>
+          Explore recorded connections, feature selection, and the evidence
+          behind your detector.
+        </p>
+      </div>
       <div id="detector-error" class="notice error" role="alert" hidden></div>
       <div id="global-error" class="notice error" role="alert" hidden></div>
       <section id="detection" role="tabpanel" aria-labelledby="tab-detection">
@@ -68,7 +67,6 @@
           </div>
           <span class="pill">Saved threshold <b id="saved-threshold">0.01</b></span>
         </div>
-        <div id="headline-metrics" class="metrics">Loading saved metrics…</div>
         <p class="note">
           Attack scores are model probability estimates, not calibrated
           certainty. This exploratory evaluation does not establish deployment
@@ -294,6 +292,10 @@
           <a class="button primary" id="export-csv" href="/api/export"
             >Export models CSV ↓</a
           >
+        </div>
+        <div class="actions">
+          <button id="refresh-results">Refresh saved results</button>
+          <span id="refresh-status" class="note" aria-live="polite">Metrics come from backend evaluation reports · checked every 30 seconds.</span>
         </div>
         <article class="card">
           <h3 id="evidence-title">Detector evidence</h3>

@@ -250,14 +250,9 @@ function renderSaved() {
   const model = currentModel(),
     metrics = model?.test_metrics;
   if (metrics) {
-    $("headline-metrics").innerHTML = metricCards(
-      metrics,
-      model.feature_count,
-    );
-    $("evidence-metrics").innerHTML = $("headline-metrics").innerHTML;
+    $("evidence-metrics").innerHTML = metricCards(metrics, model.feature_count);
   } else {
-    $("headline-metrics").textContent = "No measured evaluation report is available for the configured model.";
-    $("evidence-metrics").textContent = $("headline-metrics").textContent;
+    $("evidence-metrics").textContent = "No measured evaluation report is available for the configured model.";
     $("attack-breakdown").textContent = "No attack-type evaluation report available.";
   }
   if (model) {
