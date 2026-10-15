@@ -68,87 +68,90 @@
           <span class="pill">Saved threshold <b id="saved-threshold">0.01</b></span>
         </div>
         <p class="note">
-          Attack scores are model probability estimates, not calibrated
-          certainty. This exploratory evaluation does not establish deployment
-          performance.
+          Run an on-demand prediction for an NSL-KDD connection record. This
+          interface reads structured features, not live network packets.
         </p>
-        <div class="columns">
-          <article class="card">
-            <div class="card-title">
-              <h3>Inspect a connection</h3>
-              <span class="pill">Manual entry</span>
+        <div class="method-flow">
+          <strong>41 original traffic features</strong><span class="flow-arrow">→</span>
+          <strong id="selected-count">Selected subset</strong><span class="flow-arrow">→</span>
+          <strong>Random Forest decision</strong>
+          <button type="button" id="see-search">Explore GA / PSO search →</button>
+        </div>
+        <article class="card detector-lab">
+          <div class="card-title">
+            <div>
+              <h3>Try the detector</h3>
+              <p>Choose a recorded connection, change a few signals, then see how the decision responds.</p>
             </div>
-            <p>Start with a real test sample, then edit its inputs.</p>
-            <div class="actions">
-              <button data-sample="normal" data-target="manual">
-                Normal example</button
-              ><button data-sample="attack" data-target="manual">
-                Attack example</button
-              ><label
-                >Threshold<input
-                  id="threshold"
-                  type="number"
-                  min="0.001"
-                  max="0.999"
-                  step="0.001"
-                  value="0.01"
-              /></label>
-            </div>
+            <span class="pill">NSL-KDD test connection</span>
+          </div>
+          <div class="sample-picks" aria-label="Choose a connection">
+            <button type="button" data-sample="normal" data-target="manual">Use a normal example</button>
+            <button type="button" data-sample="attack" data-target="manual">Use an attack example</button>
+          </div>
+          <p id="sample-status" class="note">Loading a recorded connection…</p>
+          <div class="detection-workspace">
             <form id="manual-form">
-              <div id="manual-fields" class="fields">Loading real sample…</div>
-              <button class="primary" type="submit" data-detector>
-                Classify connection →
-              </button>
+              <h4>Change the signals</h4>
+              <p class="note">These are the most useful inputs to explore. Leave them as they are for a one-click detection.</p>
+              <div id="manual-fields" class="fields quick-fields">Loading inputs…</div>
+              <details class="advanced-fields">
+                <summary>View or edit the other connection fields</summary>
+                <div id="manual-extra-fields" class="fields">Loading inputs…</div>
+              </details>
+              <details class="advanced-fields">
+                <summary>Advanced: decision threshold</summary>
+                <label>Attack threshold
+                  <input id="threshold" type="number" min="0.001" max="0.999" step="0.001" value="0.01" />
+                </label>
+                <p class="note">The saved threshold is the default. Changing it explores a different operating point.</p>
+              </details>
+              <button class="primary run-detector" type="submit" data-detector>Run detection →</button>
             </form>
-            <div id="manual-output" class="output" aria-live="polite"></div>
-          </article>
-          <div>
-            <article class="card">
-              <h3>Batch CSV analysis</h3>
-              <p>
-                Header row with original feature names · up to 5,000 rows / 5
-                MiB. Label and difficulty columns are ignored.
-              </p>
+            <div class="decision-panel" aria-live="polite">
+              <span class="eyebrow">MODEL DECISION</span>
+              <div id="manual-output" class="output">Choose a connection and run detection to see the result here.</div>
+            </div>
+          </div>
+          <p class="note">Edits to a recorded connection are synthetic what-if changes. The attack score is an uncalibrated model estimate, not certainty.</p>
+        </article>
+        <details class="card">
+          <summary>Which inputs does this detector actually use?</summary>
+          <p class="note">Feature selection keeps a best-found subset of the original 41 inputs. The model uses the listed inputs; it ignores fields outside this subset.</p>
+          <div id="active-features" class="chips"></div>
+        </details>
+        <details class="card secondary-tools">
+          <summary>More tools: batch CSV and recorded traffic replay</summary>
+          <p class="note">Use these when you want to test multiple rows or step through the held-out dataset.</p>
+          <div class="columns">
+            <div>
+              <h3>Analyze a CSV batch</h3>
+              <p>Header row with original NSL-KDD feature names · up to 5,000 rows / 5 MiB. Label and difficulty columns are ignored.</p>
               <form id="csv-form">
-                <label class="upload"
-                  >Choose traffic CSV<input
-                    id="csv-file"
-                    type="file"
-                    accept=".csv,text/csv"
-                    required /></label
-                ><button class="primary" data-detector>Analyze CSV →</button>
+                <label class="upload">Choose traffic CSV
+                  <input id="csv-file" type="file" accept=".csv,text/csv" required />
+                </label>
+                <button class="primary" data-detector>Analyze CSV →</button>
               </form>
               <div id="csv-output" class="output" aria-live="polite"></div>
-            </article>
-            <article class="card">
-              <div class="card-title">
-                <h3>Recorded test traffic</h3>
-                <span class="live-dot">TEST-DATA REPLAY</span>
-              </div>
-              <p>Playback of recorded NSL-KDD test connections.</p>
+            </div>
+            <div>
+              <h3>Replay recorded traffic</h3>
+              <p>Playback of recorded NSL-KDD test connections, not live network packets.</p>
               <div class="actions">
-                <button id="replay-start" class="primary" data-detector>
-                  Start</button
-                ><button id="replay-pause" disabled>Pause</button
-                ><button id="replay-reset">Reset</button
-                ><label
-                  >Speed<select id="replay-speed">
-                    <option value="1000">1×</option>
-                    <option value="500">2×</option>
-                    <option value="200">5×</option>
-                  </select></label
-                >
+                <button id="replay-start" class="primary" data-detector>Start</button>
+                <button id="replay-pause" disabled>Pause</button>
+                <button id="replay-reset">Reset</button>
+                <label>Speed<select id="replay-speed">
+                  <option value="1000">1×</option><option value="500">2×</option><option value="200">5×</option>
+                </select></label>
               </div>
               <p id="replay-count">0 connections · 0 attacks · 0 correct</p>
               <div id="replay-error" role="alert"></div>
-              <div
-                id="replay-output"
-                class="scroll output"
-                aria-live="polite"
-              ></div>
-            </article>
+              <div id="replay-output" class="scroll output" aria-live="polite"></div>
+            </div>
           </div>
-        </div>
+        </details>
       </section>
       <section
         id="optimization"
@@ -324,6 +327,11 @@
           <div id="frequency-chart"></div>
           <div id="benchmark-note"></div>
         </details>
+        <article class="card">
+          <h3>Inference timing and statistical checks</h3>
+          <div id="timing-evidence"></div>
+          <div id="stats-evidence"></div>
+        </article>
         <article class="card">
           <h3>Attack-type detection</h3>
           <p>Support counts matter, especially for rare attacks.</p>

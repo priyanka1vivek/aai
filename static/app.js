@@ -165,38 +165,52 @@ function predictions(r) {
     `<p class="note">Threshold: ${esc(r.threshold)} · ${esc(r.score_note || "Attack scores are not calibrated certainty.")}</p>`
   );
 }
+const quickSignalInfo = {
+  service: ["Service", "Network service used by the connection"],
+  src_bytes: ["Bytes sent", "Bytes sent from source to destination"],
+  duration: ["Duration (seconds)", "How long the connection lasted"],
+  logged_in: ["Logged in", "0 = no · 1 = yes"],
+  srv_serror_rate: ["Service error rate", "Share of recent same-service connections with errors"],
+  dst_host_diff_srv_rate: ["Different-service rate", "Share of recent destination-host connections using other services"],
+};
 function fields(target, connection) {
   const used = new Set(currentModel()?.selected_features || []);
-  $(target + "-fields").innerHTML = state.features
-    .map((name) => {
-      const value = connection[name],
-        numeric = typeof value === "number",
-        max =
-          name.endsWith("_rate") ||
-          [
-            "land",
-            "logged_in",
-            "root_shell",
-            "is_host_login",
-            "is_guest_login",
-          ].includes(name)
-            ? 1
-            : null;
-      return `<label class="${used.has(name) ? "used" : ""}">${esc(name)}${used.has(name) ? " • used" : ""}<input name="${esc(name)}" value="${esc(value)}" ${numeric ? `type="number" min="0" step="any" ${max !== null ? `max="${max}"` : ""}` : 'type="text"'} required></label>`;
-    })
-    .join("");
+  const quick = target === "manual" ? new Set(Object.keys(quickSignalInfo)) : new Set();
+  const html = (name) => {
+    const value = connection[name], numeric = typeof value === "number";
+    const max = name.endsWith("_rate") ||
+      ["land", "logged_in", "root_shell", "is_host_login", "is_guest_login"].includes(name) ? 1 : null;
+    const info = quickSignalInfo[name];
+    const title = target === "manual" && info ? info[0] : name;
+    const hint = target === "manual" && info ? `<small>${esc(info[1])}</small>` : "";
+    return `<label class="${used.has(name) ? "used" : ""}">${esc(title)}${used.has(name) ? " • used" : ""}${hint}<input name="${esc(name)}" value="${esc(value)}" ${numeric ? `type="number" min="0" step="any" ${max !== null ? `max="${max}"` : ""}` : 'type="text"'} required></label>`;
+  };
+  if (target === "manual") {
+    $("manual-fields").innerHTML = state.features.filter(name => quick.has(name)).map(html).join("");
+    $("manual-extra-fields").innerHTML = state.features.filter(name => !quick.has(name)).map(html).join("");
+  } else {
+    $(target + "-fields").innerHTML = state.features.map(html).join("");
+  }
 }
 function readFields(target) {
   const out = {};
-  $(target + "-fields")
-    .querySelectorAll("input")
-    .forEach((i) => {
-      if (!i.reportValidity()) throw Error(`Invalid value for ${i.name}.`);
-      out[i.name] = i.type === "number" ? Number(i.value) : i.value;
-      if (i.type === "number" && !Number.isFinite(out[i.name]))
-        throw Error(`${i.name} must be finite.`);
-    });
+  const containers = target === "manual" ? [$("manual-fields"), $("manual-extra-fields")] : [$(target + "-fields")];
+  containers.forEach(container => container.querySelectorAll("input").forEach(i => {
+    if (!i.reportValidity()) throw Error(`Invalid value for ${i.name}.`);
+    out[i.name] = i.type === "number" ? Number(i.value) : i.value;
+    if (i.type === "number" && !Number.isFinite(out[i.name])) throw Error(`${i.name} must be finite.`);
+  }));
   return out;
+}
+function detectionResult(response, changed) {
+  const prediction = response.predictions.at(-1);
+  const previous = changed.length ? response.predictions[0] : null;
+  const label = prediction.label === "attack" ? "Attack flagged" : "Normal traffic";
+  const ignored = changed.filter(name => !(response.selected_features || []).includes(name));
+  return `${warnings(response.warnings)}<div class="decision ${prediction.label}"><strong>${esc(label)}</strong><span>Attack score: ${pct(prediction.attack_score)}</span></div>
+    <div class="score-track" role="img" aria-label="Attack score ${pct(prediction.attack_score)}"><i style="width:${Math.max(1, prediction.attack_score * 100)}%"></i></div>
+    <p class="note">Decision threshold ${esc(response.threshold)}. This score is an uncalibrated Random Forest estimate.</p>
+    ${previous ? `<div class="comparison"><strong>What changed?</strong><p>Original: ${esc(previous.label)} (${pct(previous.attack_score)}) → Edited: ${esc(prediction.label)} (${pct(prediction.attack_score)}).</p><p>${changed.length} field${changed.length === 1 ? "" : "s"} changed.${ignored.length ? ` ${ignored.length} changed field${ignored.length === 1 ? " is" : "s are"} not used by this model.` : ""} Edits are synthetic.</p></div>` : '<p class="note">Change a signal on the left and run again to compare its effect.</p>'}`;
 }
 async function sample(target, label) {
   const key = `${target}:${label}`,
@@ -205,9 +219,13 @@ async function sample(target, label) {
   state.samples[target] = r.connection;
   state.sampleIndices[key] = r.next_index ?? 0;
   fields(target, r.connection);
-  if ($(target + "-output"))
+  if (target === "manual") {
+    $("sample-status").textContent = `Recorded ${r.actual_label} example selected · test row ${r.test_row}. You can adjust the signals below.`;
+    $("manual-output").textContent = "Ready. Run detection to see the model decision.";
+  } else if ($(target + "-output")) {
     $(target + "-output").textContent =
       `Real ${r.actual_label} sample · test row ${r.test_row}. Edits create a synthetic scenario.`;
+  }
 }
 function chart(id, rows, series, xKey, title) {
   const valid = rows.filter(
@@ -255,6 +273,8 @@ function renderSaved() {
     $("evidence-metrics").textContent = "No measured evaluation report is available for the configured model.";
     $("attack-breakdown").textContent = "No attack-type evaluation report available.";
   }
+  $("selected-count").textContent = model ? `${model.feature_count} selected inputs` : "Selected subset";
+  $("active-features").innerHTML = model ? chips(model.selected_features) : "No runnable model selected.";
   if (model) {
     const cm = model.test_metrics.confusion_matrix;
     $("detector-evidence").innerHTML =
@@ -299,6 +319,8 @@ function renderBenchmark() {
   if (!b) {
     $("benchmark").textContent =
       "Requested original benchmark was not returned by /api/results.";
+    $("timing-evidence").textContent = "No saved timing comparison is available.";
+    $("stats-evidence").textContent = "No saved statistical comparison is available.";
     return;
   }
   const fmt = (s, k, percent = true) => {
@@ -330,6 +352,21 @@ function renderBenchmark() {
     ) +
     `<p class="note">Source: results/experiment_${esc(b.experiment_id)}.json · seeds ${esc(b.seeds.join(", "))}</p>`;
   $("benchmark-note").textContent = b.statistics?.limits || "";
+  const chosen = ["full", "chi_square", "ga", "pso"].map(method => {
+    const selected = b.statistics?.paired_stratified_test_bootstrap?.find(row => row.method === method);
+    return b.records.find(row => row.model_id === selected?.model_id) || b.records.find(row => row.algorithm === method);
+  }).filter(Boolean);
+  $("timing-evidence").innerHTML = `<p class="note">Measured amortized milliseconds per connection for 1,000-row batches. Recorded model runs and configurations; smaller feature sets are not guaranteed to be faster.</p>` +
+    table(["Method", "Inputs", "Pipeline ms / connection", "Attack recall", "False-alarm rate"], chosen.map(row => [
+      row.algorithm, `${row.feature_count} / 41`, row.prediction_timing?.pipeline_ms_per_connection?.toFixed(4) ?? "—",
+      pct(row.test_metrics?.recall), pct(row.test_metrics?.false_alarm_rate),
+    ]));
+  const paired = b.statistics?.ga_vs_pso_paired || {};
+  $("stats-evidence").innerHTML = `<h4>GA vs PSO · five paired seeds</h4>` +
+    table(["Measure", "Adjusted p-value", "Interpretation"], [
+      ["Validation fitness", paired.best_fitness?.p_value_bonferroni_two_metrics?.toFixed(3) ?? "—", "No significant difference at 0.05"],
+      ["Test F1", paired.test_f1?.p_value_bonferroni_two_metrics?.toFixed(3) ?? "—", "No significant difference at 0.05"],
+    ]) + `<p class="note">A fixed data split and five seeds limit these comparisons. Confidence intervals against full features are stored in the experiment report.</p>`;
   renderFrequency();
 }
 function renderFrequency() {
@@ -389,10 +426,12 @@ async function refreshDetector(full = false) {
       b.disabled = !policy.available || (b.id === "replay-start" && state.replay.running);
     });
     const used = new Set(currentModel()?.selected_features || []);
-    for (const target of ["manual", "whatif"]) $(target + "-fields").querySelectorAll("input").forEach(input => {
+    for (const target of ["manual", "whatif"]) (target === "manual"
+      ? [$("manual-fields"), $("manual-extra-fields")]
+      : [$("whatif-fields")]).forEach(container => container.querySelectorAll("input").forEach(input => {
       input.parentElement.classList.toggle("used", used.has(input.name));
-      input.parentElement.firstChild.textContent = input.name + (used.has(input.name) ? " • used" : "");
-    });
+      if (target !== "manual") input.parentElement.firstChild.textContent = input.name + (used.has(input.name) ? " • used" : "");
+    }));
     renderDetectorStatus();
     renderSaved();
     if (full) await reloadSaved();
@@ -648,6 +687,7 @@ async function replayStep() {
   }
 }
 function bind() {
+  $("see-search").onclick = () => $("tab-optimization").click();
   $("refresh-results").onclick = () => refreshDetector(true);
   document.querySelectorAll("[data-tab]").forEach((b, index) => {
     b.onkeydown = (e) => {
@@ -688,13 +728,16 @@ function bind() {
     action(e.submitter, "manual-output", async () => {
       if (!$("threshold").reportValidity())
         throw Error("Threshold must be 0.001–0.999.");
-      $("manual-output").innerHTML = predictions(
-        await api("/api/classify", {
-          model_id: detector(),
-          connection: readFields("manual"),
-          threshold: Number($("threshold").value),
-        }),
-      );
+      const edited = readFields("manual");
+      const original = state.samples.manual;
+      if (!original) throw Error("Choose a recorded connection first.");
+      const changed = Object.keys(edited).filter(name => edited[name] !== original[name]);
+      const response = await api("/api/classify", {
+        model_id: detector(),
+        connections: changed.length ? [original, edited] : [edited],
+        threshold: Number($("threshold").value),
+      });
+      $("manual-output").innerHTML = detectionResult(response, changed);
     });
   };
   $("csv-form").onsubmit = (e) => {

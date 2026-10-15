@@ -437,3 +437,44 @@ footer {
     display: block;
   }
 }
+
+/* Connection lab: start with a sample and make the model decision visible. */
+.method-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  background: #e9f5f1;
+  border: 1px solid #c9e7df;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 20px 0;
+}
+.method-flow strong { font-size: 15px; }
+.method-flow .flow-arrow { color: var(--teal); font-weight: 800; }
+.method-flow button { margin-left: auto; }
+.detector-lab { padding: 30px; }
+.sample-picks { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0 8px; }
+.sample-picks button { padding: 12px 18px; font-weight: 650; }
+.detection-workspace { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .85fr); gap: 28px; align-items: start; }
+.quick-fields { max-height: none; overflow: visible; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.quick-fields label { font-size: 13px; font-weight: 650; }
+.quick-fields small { display: block; color: var(--muted); font-weight: 400; font-size: 11px; min-height: 24px; }
+.advanced-fields { border-top: 1px solid var(--line); padding: 13px 0; }
+.advanced-fields summary { font-size: 13px; color: var(--teal); }
+.advanced-fields .fields { max-height: 250px; }
+.advanced-fields > label { max-width: 230px; margin-top: 12px; }
+.run-detector { margin-top: 15px; padding: 12px 20px; font-weight: 700; }
+.decision-panel { background: #f4f8f7; border: 1px solid #d5e6e1; border-radius: 12px; padding: 24px; min-height: 260px; }
+.decision-panel .output { margin-top: 15px; }
+.decision { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.decision strong { font-size: 25px; color: var(--teal); }
+.decision.attack strong { color: var(--red); }
+.decision span { font-weight: 650; }
+.score-track { height: 11px; border-radius: 8px; background: #dae5e2; overflow: hidden; }
+.score-track i { display: block; height: 100%; border-radius: inherit; background: var(--teal); }
+.comparison { border-top: 1px solid var(--line); margin-top: 18px; padding-top: 15px; }
+.secondary-tools summary { font-size: 15px; }
+.secondary-tools .columns { border-top: 1px solid var(--line); margin-top: 18px; padding-top: 18px; }
+@media (max-width: 900px) { .detection-workspace { grid-template-columns: 1fr; } }
+@media (max-width: 520px) { .quick-fields { grid-template-columns: 1fr; } .method-flow button { margin-left: 0; } }
