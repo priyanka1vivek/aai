@@ -325,56 +325,9 @@ function renderBenchmark() {
   if (!b) {
     $("overview-summary").textContent = "The recorded comparison is unavailable. Check that the original experiment report is present.";
     $("overview-features").textContent = "";
-    $("benchmark").textContent =
-      "Requested original benchmark was not returned by /api/results.";
-    $("timing-evidence").textContent = "No saved timing comparison is available.";
-    $("stats-evidence").textContent = "No saved statistical comparison is available.";
+    $("frequency-chart").textContent = "Recorded feature frequencies are unavailable.";
     return;
   }
-  const fmt = (s, k, percent = true) => {
-    const m = s.metrics[k];
-    return m
-      ? `${percent ? pct(m.mean) : Number(m.mean).toFixed(2)}${m.std == null ? "" : ` ± ${percent ? pct(m.std) : Number(m.std).toFixed(2)}`}`
-      : "—";
-  };
-  $("benchmark").innerHTML =
-    table(
-      [
-        "Method",
-        "Runs",
-        "Accuracy ± SD",
-        "Recall ± SD",
-        "F1 ± SD",
-        "False-alarm rate ± SD",
-        "Inputs ± SD",
-      ],
-      b.summaries.map((s) => [
-        s.algorithm,
-        s.runs,
-        fmt(s, "accuracy"),
-        fmt(s, "recall"),
-        fmt(s, "f1"),
-        fmt(s, "false_alarm_rate"),
-        fmt(s, "features", false),
-      ]),
-    ) +
-    `<p class="note">Source: results/experiment_${esc(b.experiment_id)}.json · seeds ${esc(b.seeds.join(", "))}</p>`;
-  $("benchmark-note").textContent = b.statistics?.limits || "";
-  const chosen = ["full", "chi_square", "ga", "pso"].map(method => {
-    const selected = b.statistics?.paired_stratified_test_bootstrap?.find(row => row.method === method);
-    return b.records.find(row => row.model_id === selected?.model_id) || b.records.find(row => row.algorithm === method);
-  }).filter(Boolean);
-  $("timing-evidence").innerHTML = `<p class="note">Measured amortized milliseconds per connection for 1,000-row batches. Recorded model runs and configurations; smaller feature sets are not guaranteed to be faster.</p>` +
-    table(["Method", "Inputs", "Pipeline ms / connection", "Attack recall", "False-alarm rate"], chosen.map(row => [
-      row.algorithm, `${row.feature_count} / 41`, row.prediction_timing?.pipeline_ms_per_connection?.toFixed(4) ?? "—",
-      pct(row.test_metrics?.recall), pct(row.test_metrics?.false_alarm_rate),
-    ]));
-  const paired = b.statistics?.ga_vs_pso_paired || {};
-  $("stats-evidence").innerHTML = `<h4>GA vs PSO · five paired seeds</h4>` +
-    table(["Measure", "Adjusted p-value", "Interpretation"], [
-      ["Validation fitness", paired.best_fitness?.p_value_bonferroni_two_metrics?.toFixed(3) ?? "—", "No significant difference at 0.05"],
-      ["Test F1", paired.test_f1?.p_value_bonferroni_two_metrics?.toFixed(3) ?? "—", "No significant difference at 0.05"],
-    ]) + `<p class="note">A fixed data split and five seeds limit these comparisons. Confidence intervals against full features are stored in the experiment report.</p>`;
   renderFrequency();
   renderOverview();
 }
@@ -427,7 +380,7 @@ async function reloadSaved() {
     )?.result;
     renderBenchmark();
   } else {
-    errorAt("benchmark", settled[1].reason);
+    errorAt("frequency-chart", settled[1].reason);
     $("overview-summary").textContent = "The recorded study could not be loaded. Check the backend and refresh.";
   }
 }

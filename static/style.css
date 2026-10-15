@@ -588,6 +588,8 @@ svg text { fill: #a8bed0; }
 #historical-card { border-color: #315267; }
 #historical-card h3 { margin-top: 6px; }
 footer { border-color: var(--line); }
+a { color: #7cebea; }
+a:hover { color: #b7fffc; }
 @media (max-width: 1000px) { .feature-map { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 @media (max-width: 700px) { nav { grid-template-columns: repeat(2, minmax(0, 1fr)); } .feature-map { grid-template-columns: repeat(4, minmax(0, 1fr)); } .map-intro { align-items: start; flex-direction: column; } }
 @media (max-width: 520px) { .intro { padding-top: 12px; } nav button { min-height: 54px; font-size: 10px; } nav button span { display: block; margin: 1px 0 0; font-size: 12px; } .feature-map { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; } .feature-tile { min-height: 70px; padding: 7px; } }

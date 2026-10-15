@@ -18,10 +18,10 @@
     </header>
     <main>
       <nav role="tablist" aria-label="Project workbench">
-        <button role="tab" aria-selected="true" aria-controls="overview" id="tab-overview" data-tab="overview">01 <span>Project Overview</span></button>
-        <button role="tab" aria-selected="false" aria-controls="optimization" id="tab-optimization" data-tab="optimization">02 <span>Run GA / PSO</span></button>
-        <button role="tab" aria-selected="false" aria-controls="detection" id="tab-detection" data-tab="detection">03 <span>Test a Model</span></button>
-        <button role="tab" aria-selected="false" aria-controls="evidence" id="tab-evidence" data-tab="evidence">04 <span>Results & Evidence</span></button>
+        <button role="tab" aria-selected="true" aria-controls="overview" id="tab-overview" data-tab="overview">01 <span>Feature Map</span></button>
+        <button role="tab" aria-selected="false" aria-controls="optimization" id="tab-optimization" data-tab="optimization">02 <span>Run Experiment</span></button>
+        <button role="tab" aria-selected="false" aria-controls="detection" id="tab-detection" data-tab="detection">03 <span>Test Detector</span></button>
+        <button role="tab" aria-selected="false" aria-controls="evidence" id="tab-evidence" data-tab="evidence">04 <span>Evaluation</span></button>
       </nav>
       <div class="intro">
         <span class="eyebrow">METAHEURISTIC FEATURE SELECTION · NSL-KDD</span>
@@ -54,7 +54,7 @@
         </article>
         <div class="overview-actions">
           <button class="primary" id="overview-run">Run your own GA / PSO search →</button>
-          <button id="overview-evidence">Inspect the full comparison →</button>
+          <button id="overview-evidence">View detector evaluation →</button>
           <button id="overview-demo">Try a saved detector →</button>
         </div>
       </section>
@@ -283,7 +283,7 @@
         <div class="section-title">
           <div>
             <span class="eyebrow">SAVED EVALUATION</span>
-            <h2>Results, with the evidence attached.</h2>
+            <h2>Measured detector evaluation.</h2>
           </div>
           <a class="button primary" id="export-csv" href="/api/export"
             >Export models CSV ↓</a
@@ -305,17 +305,9 @@
           <div id="historical-metrics" class="metrics"></div>
           <p class="note">These recorded KDDTest+ metrics belong to the original calibrated model. Its binary artifact is not published; a locally retrained demo is a different model. The historical evaluation is exploratory after prior inspection of this test set.</p>
         </article>
-        <details class="card" open>
-          <summary>
-            Original five-seed benchmark <span>Expand comparison ↗</span>
-          </summary>
-          <p>
-            Original fixed-split full-feature, chi-square, GA and PSO results.
-            Means ± standard deviations reflect optimizer variability, not
-            independent datasets.
-          </p>
-          <div id="benchmark">Loading saved benchmark…</div>
-          <h3>Feature-selection frequency</h3>
+        <article class="card">
+          <h3>Feature selection across saved runs</h3>
+          <p>Explore how often each input was selected in the recorded study. The full experiment report remains in the repository for review.</p>
           <label
             >Method<select id="frequency-method">
               <option value="ga">GA</option>
@@ -325,12 +317,7 @@
             </select></label
           >
           <div id="frequency-chart"></div>
-          <div id="benchmark-note"></div>
-        </details>
-        <article class="card">
-          <h3>Inference timing and statistical checks</h3>
-          <div id="timing-evidence"></div>
-          <div id="stats-evidence"></div>
+          <p class="note"><a href="https://github.com/priyanka1vivek/aai/blob/main/results/experiment_31e9b36582044da995b33f1b20eb6c92.json" target="_blank" rel="noopener">View the original experiment record ↗</a></p>
         </article>
         <article class="card">
           <h3>Attack-type detection</h3>
