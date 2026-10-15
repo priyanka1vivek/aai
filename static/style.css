@@ -380,15 +380,6 @@ svg {
   height: 100%;
   background: var(--teal);
 }
-footer {
-  border-top: 1px solid var(--line);
-  margin-top: 32px;
-  padding-top: 22px;
-  font-size: 11px;
-  color: var(--muted);
-  display: flex;
-  justify-content: space-between;
-}
 [hidden] {
   display: none !important;
 }
@@ -428,9 +419,6 @@ footer {
   }
   .bar-row {
     grid-template-columns: 150px 1fr 45px;
-  }
-  footer {
-    display: block;
   }
   summary span {
     float: none;
@@ -587,7 +575,6 @@ svg text { fill: #a8bed0; }
 .feature-tile.active strong { color: #d2fffc; }
 #historical-card { border-color: #315267; }
 #historical-card h3 { margin-top: 6px; }
-footer { border-color: var(--line); }
 a { color: #7cebea; }
 a:hover { color: #b7fffc; }
 @media (max-width: 1000px) { .feature-map { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
