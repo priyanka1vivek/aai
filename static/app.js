@@ -209,8 +209,8 @@ function detectionResult(response, changed) {
   const ignored = changed.filter(name => !(response.selected_features || []).includes(name));
   return `${warnings(response.warnings)}<div class="decision ${prediction.label}"><strong>${esc(label)}</strong><span>Attack score: ${pct(prediction.attack_score)}</span></div>
     <div class="score-track" role="img" aria-label="Attack score ${pct(prediction.attack_score)}"><i style="width:${Math.max(1, prediction.attack_score * 100)}%"></i></div>
-    <p class="note">Decision threshold ${esc(response.threshold)}. This score is an uncalibrated Random Forest estimate.</p>
-    ${previous ? `<div class="comparison"><strong>What changed?</strong><p>Original: ${esc(previous.label)} (${pct(previous.attack_score)}) → Edited: ${esc(prediction.label)} (${pct(prediction.attack_score)}).</p><p>${changed.length} field${changed.length === 1 ? "" : "s"} changed.${ignored.length ? ` ${ignored.length} changed field${ignored.length === 1 ? " is" : "s are"} not used by this model.` : ""} Edits are synthetic.</p></div>` : '<p class="note">Change a signal on the left and run again to compare its effect.</p>'}`;
+    <p class="note">Decision threshold ${esc(response.threshold)}.</p>
+    ${previous ? `<div class="comparison"><strong>What changed?</strong><p>Original: ${esc(previous.label)} (${pct(previous.attack_score)}) → Edited: ${esc(prediction.label)} (${pct(prediction.attack_score)}).</p><p>${changed.length} field${changed.length === 1 ? "" : "s"} changed.${ignored.length ? ` ${ignored.length} changed field${ignored.length === 1 ? " is" : "s are"} not used by this model.` : ""}</p></div>` : '<p class="note">Change a signal on the left and run again to compare its effect.</p>'}`;
 }
 async function sample(target, label) {
   const key = `${target}:${label}`,
