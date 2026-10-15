@@ -122,6 +122,12 @@ function renderDetectorStatus() {
     : "Saved detector unavailable";
   $("detector-error").hidden = !!p?.available;
   if (!p?.available) errorAt("detector-error", "Historical model files are absent. Run python bootstrap_demo.py to train a separate detector from the committed data, then refresh. Recorded evaluation reports remain viewable.");
+  $("historical-note").textContent = p?.historical_available
+    ? "Original calibrated model artifact available in this checkout."
+    : "Recorded evaluation only · original model artifact unavailable in the published repository.";
+  $("historical-metrics").innerHTML = p?.historical_expected_test_metrics || p?.expected_test_metrics
+    ? metricCards(p.historical_expected_test_metrics || p.expected_test_metrics, p.historical_validation_calibration?.feature_count ?? p.validation_calibration?.feature_count ?? 11)
+    : "Historical evaluation metadata unavailable.";
 }
 function currentModel() {
   return state.models.find((m) => m.model_id === state.policy?.model_id);
@@ -382,16 +388,16 @@ function renderOverview() {
     $("overview-summary").textContent = "The saved comparison is incomplete.";
     return;
   }
-  const metrics = current.metrics;
-  const selected = b.statistics?.paired_stratified_test_bootstrap?.find(r => r.method === method);
-  const representative = b.records.find(r => r.model_id === selected?.model_id) || b.records.find(r => r.algorithm === method);
   const name = {ga: "Genetic Algorithm", pso: "Particle Swarm Optimization", full: "All features", chi_square: "Chi-square"}[method];
-  const baselineAccuracy = full.metrics.accuracy.mean;
-  const delta = metrics.accuracy.mean - baselineAccuracy;
-  const features = metrics.features.mean;
-  const label = current.runs === 1 ? "one saved baseline" : `${current.runs} optimizer seeds`;
-  $("overview-summary").innerHTML = `<div class="study-result"><div class="study-result-main"><span class="eyebrow">${esc(name)} · ${esc(label)}</span><strong>${esc(features.toFixed(features % 1 ? 1 : 0))}<small> / 41 inputs</small></strong><p>${esc((41 - features).toFixed(features % 1 ? 1 : 0))} fewer original inputs on average</p></div><div class="study-kpis"><div><span>Held-out accuracy</span><strong>${pct(metrics.accuracy.mean)}</strong></div><div><span>Attack recall</span><strong>${pct(metrics.recall.mean)}</strong></div><div><span>False-alarm rate</span><strong>${pct(metrics.false_alarm_rate.mean)}</strong></div></div></div><div class="study-bars"><div><span>Selected inputs</span><div class="bar"><i style="width:${(features / 41 * 100).toFixed(1)}%"></i></div><b>${esc(features.toFixed(1))} / 41</b></div><div><span>Test accuracy</span><div class="bar"><i style="width:${(metrics.accuracy.mean * 100).toFixed(1)}%"></i></div><b>${pct(metrics.accuracy.mean)}</b></div></div><p class="study-context">Compared with all 41 inputs: <strong>${method === "full" ? "reference method" : `${delta >= 0 ? "+" : ""}${(delta * 100).toFixed(2)} percentage points accuracy`}</strong>. The five GA/PSO runs vary; see Results & Evidence for standard deviations and statistical checks.</p>`;
-  $("overview-features").innerHTML = representative ? `<div class="study-feature-heading"><strong>${method === "full" ? "All original inputs" : "Example saved subset"}</strong><span>${method === "ga" || method === "pso" ? "One saved run, separate from the averages above" : "Saved baseline"}</span></div>${chips(representative.selected_features)}` : "No saved feature list available.";
+  const descriptions = {
+    ga: "Evolutionary search mutates and recombines feature subsets, then keeps candidates with stronger validation fitness.",
+    pso: "Binary particles update their feature choices using their own best subset and the swarm's best subset.",
+    full: "Reference classifier with every original feature. There is no selection step.",
+    chi_square: "A filter baseline ranks individual features by their association with the training labels.",
+  };
+  $("overview-summary").innerHTML = `<div class="map-intro"><div><span class="eyebrow">${esc(name)}</span><h4>${method === "ga" || method === "pso" ? "Search for a useful subset" : "Comparison baseline"}</h4><p>${esc(descriptions[method])}</p></div><span class="map-legend"><i></i> ${method === "ga" || method === "pso" ? "Brighter = selected in more runs" : "Highlighted = included"}</span></div>`;
+  const frequency = current.feature_selection_frequency || [];
+  $("overview-features").innerHTML = `<div class="feature-map" role="list" aria-label="Feature selection frequency for ${esc(name)}">${frequency.map((item, index) => `<div class="feature-tile ${item.frequency ? "active" : ""}" role="listitem" style="--frequency:${Math.max(0, Math.min(1, Number(item.frequency) || 0))}" title="${esc(item.feature)} · ${method === "ga" || method === "pso" ? `${Math.round(item.frequency * 5)} of 5 runs` : item.frequency ? "Included" : "Excluded"}"><span>${String(index + 1).padStart(2, "0")}</span><strong>${esc(item.feature)}</strong></div>`).join("")}</div>`;
 }
 function renderFrequency() {
   const summary = state.benchmark?.summaries.find(

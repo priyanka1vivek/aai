@@ -31,17 +31,16 @@ test('navigation panels, primary controls and optional tools are present', () =>
   assert.match(markup, /id="overview"[^>]*aria-labelledby="tab-overview"/);
 });
 
-test('overview reads the recorded comparison and distinguishes run averages from examples', () => {
+test('overview uses recorded feature frequencies without promoting evaluation scores', () => {
   context.report = report;
   vm.runInContext('state.benchmark = report', context);
   for (const method of ['ga', 'pso', 'full', 'chi_square']) {
     element('overview-method').value = method;
     vm.runInContext('renderOverview()', context);
     const row = report.summaries.find(s => s.algorithm === method);
-    assert.ok(element('overview-summary').innerHTML.includes(`${(row.metrics.accuracy.mean * 100).toFixed(2)}%`));
-    assert.ok(element('overview-summary').innerHTML.includes(`${(row.metrics.recall.mean * 100).toFixed(2)}%`));
-    assert.ok(element('overview-summary').innerHTML.includes(`${(row.metrics.false_alarm_rate.mean * 100).toFixed(2)}%`));
-    assert.ok(element('overview-features').innerHTML.includes('Saved baseline') || element('overview-features').innerHTML.includes('One saved run'));
+    assert.equal((element('overview-features').innerHTML.match(/class="feature-tile /g) || []).length, 41);
+    assert.ok(element('overview-features').innerHTML.includes(row.feature_selection_frequency[0].feature));
+    assert.ok(!element('overview-summary').innerHTML.includes(`${(row.metrics.accuracy.mean * 100).toFixed(2)}%`));
   }
 });
 
@@ -57,4 +56,23 @@ test('quick search controls and advanced controls produce a complete search conf
   const pso = vm.runInContext('config()', context);
   assert.equal(pso.population, 12);
   assert.equal(pso.inertia, 0.7);
+});
+
+test('historical metrics stay labelled separately from a runnable retrained demo', () => {
+  context.demoPolicy = {
+    available: true,
+    historical_available: false,
+    provenance: 'locally_retrained_demo',
+    attack_threshold: 0.01,
+    historical_expected_test_metrics: {
+      accuracy: 0.9247249822569198, recall: 0.9451414322449934,
+      false_alarm_rate: 0.10225517454433117, f1: 0.9346176073974186,
+    },
+    historical_validation_calibration: { feature_count: 11 },
+  };
+  vm.runInContext('state.policy = demoPolicy; renderDetectorStatus()', context);
+  assert.match(element('historical-note').textContent, /artifact unavailable/);
+  assert.match(element('historical-metrics').innerHTML, /92\.47%/);
+  assert.match(element('historical-metrics').innerHTML, /10\.23%/);
+  assert.match(element('evidence-title').textContent, /retrained/);
 });

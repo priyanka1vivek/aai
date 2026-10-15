@@ -526,3 +526,68 @@ nav button[aria-selected="true"] { background: var(--ink); border-color: var(--i
 @media (max-width: 900px) { .study-result { grid-template-columns: 1fr; } .study-result-main { border-right: 0; border-bottom: 1px solid #d4e7e0; } }
 @media (max-width: 700px) { .study-steps { grid-template-columns: 1fr; } .study-kpis { grid-template-columns: 1fr 1fr; } .study-comparison .card-title { align-items: stretch; flex-direction: column; } .study-comparison .card-title label { min-width: 0; } .compact-controls { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 520px) { nav { gap: 7px; } nav button { padding: 11px 12px; } nav button span { margin-left: 3px; } .study-kpis { grid-template-columns: 1fr; } .study-bars > div { grid-template-columns: 90px minmax(0, 1fr) 75px; gap: 8px; } .compact-controls { grid-template-columns: 1fr; } }
+
+/* Midnight Signal: consistent dark surfaces throughout the workbench. */
+:root { --bg: #080f1d; --ink: #edf6ff; --muted: #9baec3; --line: #263a53; --teal: #4ce0de; --soft: #132c3f; --red: #ff8d96; }
+body { background: radial-gradient(circle at 80% 0%, #132a45 0, #080f1d 32rem) fixed; color: var(--ink); font-family: Inter, system-ui, sans-serif; }
+h1, h2, h3, h4, .brand span, summary, .study-steps strong, .study-feature-heading strong { font-family: "Space Grotesk", Inter, system-ui, sans-serif; }
+header { background: #0b1627; border-color: var(--line); padding: 17px 5%; }
+.brand { color: var(--teal); }
+.brand span { letter-spacing: .15em; }
+.brand small { color: #94acc1; }
+main { max-width: 1500px; }
+nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; overflow: visible; }
+nav button { width: 100%; min-height: 62px; border: 1px solid #2a425b; border-radius: 11px; background: #101e32; color: #adbed1; text-align: center; font-size: 12px; letter-spacing: .04em; }
+nav button span { font-size: 14px; letter-spacing: 0; }
+nav button:hover { background: #172e46; color: white; }
+nav button[aria-selected="true"] { background: linear-gradient(125deg, #16485a, #153551); border-color: #53d9db; color: #edffff; box-shadow: inset 0 -3px #53d9db, 0 8px 30px #00d6d418; }
+.intro { max-width: none; padding: 35px 0 28px; }
+.intro h1 { color: white; }
+.intro h1 span { color: #64e4e2; }
+.intro p { color: #b8c9d9; }
+.eyebrow { color: #70e9e5; }
+p, label, .note { color: var(--muted); }
+.overview-lead { background: linear-gradient(110deg, #132b40, #0d2338 65%, #113b4b); border: 1px solid #326074; box-shadow: 0 18px 40px #02091755; }
+.overview-lead:after { color: #72f6ef12; }
+.overview-lead p { color: #b9d4dd; }
+.study-steps > div, .card, .metric { background: #101e30; border-color: var(--line); box-shadow: 0 12px 30px #040a1640; }
+.study-steps b { color: var(--teal); }
+.study-steps span, .study-feature-heading span { color: var(--muted); }
+.study-comparison { border-color: #32536a; background: linear-gradient(135deg, #102237, #0e1c2f); }
+button, .button { background: #182c43; border-color: #36516b; color: #e7f5ff; }
+button:hover, .button:hover { background: #23445c; color: white; border-color: var(--teal); }
+.primary { background: #38c9cc; border-color: #38c9cc; color: #061b27; font-weight: 700; }
+.primary:hover { background: #73eeeb; border-color: #73eeeb; color: #061b27; }
+input, select { background: #0c1a2b; border-color: #35516a; color: #f1f8ff; font-family: Inter, system-ui, sans-serif; }
+input:focus, select:focus, button:focus-visible, a:focus-visible { outline-color: #76eeee; }
+input::file-selector-button { background: #244459; color: white; border: 0; padding: 7px; }
+.pill, .chip, .notice, .method-flow { background: #173346; color: #9ef1e9; border-color: #285565; }
+.error { color: #ffacb3; background: #3d222e; }
+.decision-panel { background: #0c2436; border-color: #326073; }
+.score-track, .bar { background: #263b50; }
+.bar i, .score-track i { background: #4ce0de; }
+.study-context, .comparison, .advanced-fields { border-color: var(--line); }
+.used input { border-color: #4ce0de; }
+.feature-grid button[aria-pressed="true"], .modes button[aria-pressed="true"] { background: #164d5a; color: #b3fffa; border-color: var(--teal); }
+th { background: #192d43; color: #b9cbdb; }
+td, th { border-color: #294058; }
+svg text { fill: #a8bed0; }
+.chart-caption { color: #b3c7d8; }
+.map-intro { display: flex; justify-content: space-between; align-items: end; gap: 22px; padding: 22px 0; border-top: 1px solid var(--line); }
+.map-intro h4 { font-size: 26px; margin: 6px 0; }
+.map-intro p { max-width: 670px; margin: 0; }
+.map-legend { color: #abc5d2; font-size: 12px; white-space: nowrap; }
+.map-legend i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 6px; background: var(--teal); box-shadow: 0 0 12px #4ce0de80; }
+.feature-map { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 9px; margin: 7px 0 24px; }
+.feature-tile { min-height: 82px; min-width: 0; border: 1px solid #2a3d52; border-radius: 9px; background: #0b1829; padding: 10px; transition: transform .18s, border-color .18s, background .18s; }
+.feature-tile.active { border-color: rgba(78, 224, 221, calc(.25 + var(--frequency) * .65)); background: rgba(31, 132, 150, calc(.13 + var(--frequency) * .38)); }
+.feature-tile:hover { transform: translateY(-4px); border-color: #84fffa; }
+.feature-tile span { display: block; color: #83a0b5; font-size: 10px; letter-spacing: .1em; margin-bottom: 10px; }
+.feature-tile strong { display: block; color: #daedfa; font: 500 11px/1.25 Inter, system-ui, sans-serif; overflow-wrap: anywhere; }
+.feature-tile.active strong { color: #d2fffc; }
+#historical-card { border-color: #315267; }
+#historical-card h3 { margin-top: 6px; }
+footer { border-color: var(--line); }
+@media (max-width: 1000px) { .feature-map { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (max-width: 700px) { nav { grid-template-columns: repeat(2, minmax(0, 1fr)); } .feature-map { grid-template-columns: repeat(4, minmax(0, 1fr)); } .map-intro { align-items: start; flex-direction: column; } }
+@media (max-width: 520px) { .intro { padding-top: 12px; } nav button { min-height: 54px; font-size: 10px; } nav button span { display: block; margin: 1px 0 0; font-size: 12px; } .feature-map { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; } .feature-tile { min-height: 70px; padding: 7px; } }
