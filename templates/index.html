@@ -23,14 +23,13 @@
         <button role="tab" aria-selected="false" aria-controls="detection" id="tab-detection" data-tab="detection">03 <span>Test Detector</span></button>
         <button role="tab" aria-selected="false" aria-controls="evidence" id="tab-evidence" data-tab="evidence">04 <span>Evaluation</span></button>
       </nav>
-      <div class="intro">
-        <span class="eyebrow">METAHEURISTIC FEATURE SELECTION · NSL-KDD</span>
-        <h1>Find the signal.<br /><span>Reduce the noise.</span></h1>
-        <p>Explore how genetic algorithms and particle swarm optimization select network features for an NSL-KDD intrusion detector.</p>
-      </div>
-      <div id="detector-error" class="notice error" role="alert" hidden></div>
       <div id="global-error" class="notice error" role="alert" hidden></div>
       <section id="overview" role="tabpanel" aria-labelledby="tab-overview">
+        <div class="intro">
+          <span class="eyebrow">METAHEURISTIC FEATURE SELECTION · NSL-KDD</span>
+          <h1>Find the signal.<br /><span>Reduce the noise.</span></h1>
+          <p>Explore how genetic algorithms and particle swarm optimization select network features for an NSL-KDD intrusion detector.</p>
+        </div>
         <div class="overview-lead">
           <span class="eyebrow">THE PROJECT QUESTION</span>
           <h2>Can we classify NSL-KDD connections using fewer than 41 original features?</h2>
@@ -59,6 +58,7 @@
         </div>
       </section>
       <section id="detection" role="tabpanel" aria-labelledby="tab-detection" hidden>
+        <div id="detector-error" class="notice error" role="alert" hidden></div>
         <div class="section-title">
           <div>
             <span class="eyebrow" id="detector-eyebrow">DETECTOR</span>
@@ -120,23 +120,8 @@
           <div id="active-features" class="chips"></div>
         </details>
         <details class="card secondary-tools">
-          <summary>More tools: batch CSV and recorded traffic replay</summary>
-          <p class="note">Use these when you want to test multiple rows or step through the held-out dataset.</p>
-          <div class="columns">
-            <div>
-              <h3>Analyze a CSV batch</h3>
-              <p>Header row with original NSL-KDD feature names · up to 5,000 rows / 5 MiB. Label and difficulty columns are ignored.</p>
-              <form id="csv-form">
-                <label class="upload">Choose traffic CSV
-                  <input id="csv-file" type="file" accept=".csv,text/csv" required />
-                </label>
-                <button class="primary" data-detector>Analyze CSV →</button>
-              </form>
-              <div id="csv-output" class="output" aria-live="polite"></div>
-            </div>
-            <div>
-              <h3>Replay recorded traffic</h3>
-              <p>Playback of recorded NSL-KDD test connections, not live network packets.</p>
+          <summary>Replay recorded test connections</summary>
+          <p>Step through held-out NSL-KDD connections to observe the detector's decisions. This is dataset playback, not live packet capture.</p>
               <div class="actions">
                 <button id="replay-start" class="primary" data-detector>Start</button>
                 <button id="replay-pause" disabled>Pause</button>
@@ -148,8 +133,6 @@
               <p id="replay-count">0 connections · 0 attacks · 0 correct</p>
               <div id="replay-error" role="alert"></div>
               <div id="replay-output" class="scroll output" aria-live="polite"></div>
-            </div>
-          </div>
         </details>
         <details class="card secondary-tools">
           <summary>More exploration: what-if comparison and analyst challenge</summary>
@@ -216,7 +199,7 @@
         <div class="section-title">
           <div>
             <span class="eyebrow">SEARCH WORKSPACE</span>
-            <h2>Find a useful subset. Inspect the tradeoffs.</h2>
+            <h2>Run a feature search. Watch it evolve.</h2>
           </div>
         </div>
         <p>
@@ -283,7 +266,7 @@
         <div class="section-title">
           <div>
             <span class="eyebrow">SAVED EVALUATION</span>
-            <h2>Measured detector evaluation.</h2>
+            <h2>Inspect the detector's measured behaviour.</h2>
           </div>
           <a class="button primary" id="export-csv" href="/api/export"
             >Export models CSV ↓</a
