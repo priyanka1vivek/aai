@@ -110,9 +110,7 @@ function renderDetectorStatus() {
   const p = state.policy;
   const demo = p?.provenance === "locally_retrained_demo";
   $("detector-eyebrow").textContent = demo ? "LOCALLY RETRAINED DETECTOR" : "CALIBRATED DETECTOR";
-  $("detector-title").textContent = demo
-    ? "Locally retrained demonstration detector"
-    : "Calibrated PSO detector — exploratory NSL-KDD evaluation.";
+  $("detector-title").textContent = "Test a saved detector on a connection.";
   $("evidence-title").textContent = demo
     ? "Newly retrained detector · measured separately"
     : "Historical calibrated detector";
@@ -156,20 +154,6 @@ function warnings(values) {
   return (values || []).length
     ? `<div class="notice">${values.map(esc).join("<br>")}</div>`
     : "";
-}
-function predictions(r) {
-  return (
-    warnings(r.warnings) +
-    table(
-      ["Row", "Prediction", "Attack score"],
-      r.predictions.map((p) => [
-        p.test_row ?? p.index,
-        p.label,
-        pct(p.attack_score),
-      ]),
-    ) +
-    `<p class="note">Threshold: ${esc(r.threshold)} · ${esc(r.score_note || "Attack scores are not calibrated certainty.")}</p>`
-  );
 }
 const quickSignalInfo = {
   service: ["Service", "Network service used by the connection"],
@@ -730,22 +714,6 @@ function bind() {
         threshold: Number($("threshold").value),
       });
       $("manual-output").innerHTML = detectionResult(response, changed);
-    });
-  };
-  $("csv-form").onsubmit = (e) => {
-    e.preventDefault();
-    action(e.submitter, "csv-output", async () => {
-      const file = $("csv-file").files[0];
-      if (!file || file.size > 5 * 1024 * 1024)
-        throw Error("Choose a CSV of at most 5 MiB.");
-      if (!$("threshold").reportValidity()) throw Error("Invalid threshold.");
-      const form = new FormData();
-      form.append("file", file);
-      form.append("model_id", detector());
-      form.append("threshold", $("threshold").value);
-      $("csv-output").innerHTML = predictions(
-        await api("/api/classify-csv", form),
-      );
     });
   };
   $("replay-start").onclick = () => {
