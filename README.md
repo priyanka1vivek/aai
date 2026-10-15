@@ -29,7 +29,7 @@ py -3.11 -m venv .venv
 ```
 
 Open http://127.0.0.1:5000. `bootstrap_demo.py` verifies SHA-256 of the two
-committed dataset files, prepares the split, and trains a **new** Random Forest
+committed dataset files after normalizing Windows CRLF line endings, prepares the split, and trains a **new** Random Forest
 using the published 11-feature mask, recorded training settings and threshold.
 It saves a new local model ID, measured metadata and prediction cache, and
 selects it in `results/active_detector.json`. Re-running it reuses the available

@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 
 from app import app, service
-from bootstrap_demo import build
+from bootstrap_demo import build, DATA_SHA256
 
 
 class Workflows(unittest.TestCase):
@@ -21,6 +21,13 @@ class Workflows(unittest.TestCase):
         response = self.client.open(path, method=method, **kwargs)
         self.assertLess(response.status_code, 300, response.get_data(as_text=True)[:500])
         return response.get_json()
+
+    def test_windows_checkout_hashes(self):
+        import hashlib
+        for name, expected in DATA_SHA256.items():
+            data = (service.root / 'data' / name).read_bytes()
+            self.assertEqual(hashlib.sha256(data.replace(b'\r\n', b'\n')).hexdigest(), expected)
+            self.assertEqual(hashlib.sha256(data.replace(b'\n', b'\r\n').replace(b'\r\n', b'\n')).hexdigest(), expected)
 
     def test_missing_historical_artifact_and_provenance(self):
         with tempfile.TemporaryDirectory() as directory:
