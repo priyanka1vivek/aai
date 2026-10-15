@@ -64,9 +64,10 @@ test('quick search controls and advanced controls produce a complete search conf
   assert.equal(pso.inertia, 0.7);
 });
 
-test('historical metrics stay labelled separately from a runnable retrained demo', () => {
+test('matching retrained and historical scores display once with provenance', () => {
   context.demoPolicy = {
     available: true,
+    model_id: 'local-demo',
     historical_available: false,
     provenance: 'locally_retrained_demo',
     attack_threshold: 0.01,
@@ -76,9 +77,17 @@ test('historical metrics stay labelled separately from a runnable retrained demo
     },
     historical_validation_calibration: { feature_count: 11 },
   };
-  vm.runInContext('state.policy = demoPolicy; renderDetectorStatus()', context);
+  context.localModels = [{model_id: 'local-demo', test_metrics: {...context.demoPolicy.historical_expected_test_metrics}}];
+  vm.runInContext('state.models = localModels; state.policy = demoPolicy; renderDetectorStatus()', context);
   assert.match(element('historical-note').textContent, /artifact unavailable/);
   assert.match(element('historical-metrics').innerHTML, /92\.47%/);
   assert.match(element('historical-metrics').innerHTML, /10\.23%/);
   assert.match(element('evidence-title').textContent, /retrained/);
+  assert.equal(element('historical-card').hidden, true);
+  assert.equal(element('matching-report-note').hidden, false);
+  assert.match(element('matching-report-note').textContent, /separate saved model/);
+  context.differentModels = [{model_id: 'local-demo', test_metrics: {...context.demoPolicy.historical_expected_test_metrics, accuracy: 0.8}}];
+  vm.runInContext('state.models = differentModels; renderDetectorStatus()', context);
+  assert.equal(element('historical-card').hidden, false);
+  assert.equal(element('matching-report-note').hidden, true);
 });
