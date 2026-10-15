@@ -1,12 +1,76 @@
-## Final additional detector (no new training required)
+# Sentinel · NSL-KDD intrusion detection lab
+
+## Start from a fresh checkout
+
+The repository includes the full `KDDTrain+.txt` and `KDDTest+.txt` data and the
+historical JSON reports, but excludes generated `.joblib` and `.npz` files. The
+published calibrated model ID `b8c6bf4db26f44b2b557f99114f03999` cannot be
+loaded from a fresh checkout. Its **recorded** test results are 92.47% accuracy,
+94.51% attack recall and **10.23% false-alarm rate** (993 false alarms; 704 missed
+attacks). The reports remain visible even when no classifier is available.
+
+Python 3.11, macOS/Linux:
+
+```sh
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -r requirements.txt
+python bootstrap_demo.py
+python app.py
+```
+
+Windows PowerShell:
+
+```powershell
+py -3.11 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe bootstrap_demo.py
+.\.venv\Scripts\python.exe app.py
+```
+
+Open http://127.0.0.1:5000. `bootstrap_demo.py` verifies SHA-256 of the two
+committed dataset files, prepares the split, and trains a **new** Random Forest
+using the published 11-feature mask, recorded training settings and threshold.
+It saves a new local model ID, measured metadata and prediction cache, and
+selects it in `results/active_detector.json`. Re-running it reuses the available
+local demo model. The script never changes `detector_policy.json`, historical
+model metadata, or experiment results. The UI labels the new detector as a local
+retraining, while the historical model remains unavailable until its original
+binary is restored. Matching test percentages do not prove binary identity or
+turn the exploratory benchmark into an independent evaluation.
+
+To verify the frontend and API flows, run `node --check static/app.js` and
+`python -m unittest discover -s tests -v`. The tests cover missing-artifact
+startup, real-data prediction, CSV upload, what-if, replay, challenge,
+threshold evidence, historical reports, and a small search/finalization job.
+GitHub Actions runs these checks on a clean checkout. Generated models and
+caches stay untracked; each new checkout trains its own demo. Loading joblib
+files from untrusted sources is unsafe, so restore only artifacts you trust.
+
+If you have the **original** `models/99af1769fd4d4e0a831a0bd435890d60.joblib`
+and matching `.predictions.npz` on your laptop, copy those plus
+`results/prepared_data.joblib` into their named folders and run
+`python activate_detector.py`. The script verifies cached scores and test rows
+before writing the historical calibrated model. Do not rename a newly trained
+model to the historical ID. When the historical file is present, it takes
+priority over the local demo in `/api/default-detector`.
+
+The UI uses Flask on localhost, and replay uses recorded test rows, not live
+network packets. The benchmark is exploratory and historical; it is not a
+modern deployment validation.
+
+---
+
+## Historical calibrated detector (original artifacts required)
 
 A recall-focused training-validation calibration selected PSO seed 3 at threshold
 0.01: **92.47% test accuracy, 94.51% attack recall, 93.46% F1**, with **10.23% false
 alarms**, using 11 inputs. This is an exploratory benchmark revision after prior
 test-set inspection, not a fresh independent assessment or a proven optimum.
 
-Run `.\venv\Scripts\python.exe activate_detector.py` to verify existing saved
-scores and create the additional calibrated model without training. It prints
+Only if the original saved model and prediction cache are available locally, run
+`.\venv\Scripts\python.exe activate_detector.py` to verify their scores and create
+the calibrated model without training. It prints
 its model ID. See `FINAL_DETECTOR.md` for the selection evidence, limitations and
 frontend handoff. Keep the original five-seed results separate.
 
@@ -42,8 +106,8 @@ committed are retained, and existing result/model files are not deleted.
 
 This folder supersedes the first-two-files starter. It contains the data,
 algorithms, experiments, saved-model training, security diagnostics, prediction,
-what-if and analyst-challenge backend. Person 2 supplies the polished frontend.
-The root page is a working API tester, not the final four-tab interface.
+what-if and analyst-challenge backend. The polished frontend is integrated.
+The root page serves the integrated four-section frontend.
 
 ## The four tabs
 
@@ -125,9 +189,8 @@ as if they belonged to one controlled experiment.
 
     .\venv\Scripts\python.exe app.py
 
-Open http://127.0.0.1:5000. The included API tester lets you send requests before
-Person 2 builds the UI. Change the endpoint and JSON, then press POST or GET.
-For GET, the JSON text is ignored.
+Open http://127.0.0.1:5000. The four-section frontend calls the same-origin Flask API. For scripted requests,
+use the endpoints below.
 
 First POST /api/run with:
 
@@ -262,9 +325,8 @@ smoke_check.py | Real-data integration verification
 
 ## Person 2 handoff
 
-Give Person 2 this entire folder. They add templates/index.html, static/app.js
-and static/styles.css. app.py automatically serves templates/index.html once it
-exists. They can reuse the APIs as documented in FRONTEND_CONTRACT.md.
+Give Person 2 this entire folder. The merged frontend lives in templates/index.html, static/app.js
+and static/style.css. app.py serves it at the root URL. They can reuse the APIs as documented in FRONTEND_CONTRACT.md.
 Run frontend and backend on the same localhost origin. No CORS changes are needed.
 Poll status once per second; use the returned history rather than animating fake
 convergence. Frontend timers control replay pace; /api/replay predicts batches.

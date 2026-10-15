@@ -14,6 +14,13 @@ def activate(root=ROOT):
     policy=json.loads((root/'detector_policy.json').read_text())
     source=policy['source_model_id'];identifier=policy['model_id'];threshold=policy['attack_threshold']
     folder=root/'models'
+    required=[folder/f'{source}.predictions.npz',folder/f'{source}.joblib',
+              root/'results'/'prepared_data.joblib']
+    missing=[str(path.relative_to(root)) for path in required if not path.is_file()]
+    if missing:
+        raise SystemExit('Original artifacts unavailable: '+', '.join(missing)+
+                         '. Restore the matching files from your laptop, or run '
+                         'python bootstrap_demo.py for a separately identified retrained detector.')
     with np.load(folder/f'{source}.predictions.npz') as cached:
         y=cached['y'].copy();scores=cached['attack_scores'].copy()
     predictions=(scores>=threshold).astype(np.int8)

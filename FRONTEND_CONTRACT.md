@@ -174,3 +174,13 @@ The inherited 98% recall / 2% FAR test constraints are not met; show the recorde
 `test_security_constraints_met=false` rather than claiming they were achieved.
 
 Frontend bootstrap: `GET /api/default-detector` returns the configured model ID, threshold, selection evidence and an `available` flag. After activation, `available=true`. Use that ID in classification requests.
+
+## Fresh-checkout model state
+
+`/api/default-detector` now includes `available`, `provenance`,
+`historical_model_id`, and `historical_available`. Before local training it
+returns the historical ID with `available=false`. After `bootstrap_demo.py`
+it selects the newly retrained ID with `provenance=locally_retrained_demo`; it
+never presents that ID as the original calibrated artifact. `/api/models`
+includes per-model `available` and `provenance` fields. JSON-only historical
+reports are evidence, not runnable classifiers.

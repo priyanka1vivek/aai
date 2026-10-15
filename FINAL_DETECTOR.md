@@ -22,13 +22,18 @@ This is an exploratory benchmark revision, not nested validation or a new
 independent held-out assessment. The new test recall/FAR do not satisfy the old
 98%/2% security gates; metadata records that failure explicitly.
 
-## Finish without another training run
+## Activate only with the original local artifacts
 
 ```powershell
 git pull --ff-only origin main
 .\venv\Scripts\python.exe activate_detector.py
 .\venv\Scripts\python.exe app.py
 ```
+
+The original source `.joblib`, matching `.predictions.npz`, and prepared data are
+not committed. A fresh checkout cannot run this command. Use `bootstrap_demo.py`
+for a distinctly labeled local retraining, or restore your trusted original
+files from your laptop.
 
 The activation command reads the original PSO seed 3 prediction cache, verifies
 all expected metrics, checks native saved-model predictions against the cache,

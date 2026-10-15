@@ -7,3 +7,6 @@ __pycache__/
 *.npz
 data/*.txt
 results/*.tmp
+
+# Local detector choice; historical policy remains tracked.
+results/active_detector.json

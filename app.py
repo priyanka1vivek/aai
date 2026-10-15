@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import pandas as pd
 from flask import Flask,jsonify,request,render_template,Response
-from src.service import ProjectService
+from src.service import ProjectService,ModelUnavailable
 
 app=Flask(__name__)
 app.config['MAX_CONTENT_LENGTH']=5*1024*1024
@@ -14,6 +14,10 @@ service=ProjectService()
 
 @app.errorhandler(ValueError)
 def invalid(error):return jsonify(error=str(error)),400
+
+
+@app.errorhandler(ModelUnavailable)
+def unavailable(error):return jsonify(error=str(error)),503
 
 
 @app.errorhandler(KeyError)
@@ -50,7 +54,26 @@ def default_detector():
     path=service.root/'detector_policy.json'
     if not path.is_file():raise KeyError('Default detector policy is unavailable.')
     policy=json.loads(path.read_text())
-    policy['available']=(service.root/'models'/f'{policy["model_id"]}.joblib').is_file()
+    historical_id=policy['model_id']
+    historical_available=(service.root/'models'/f'{historical_id}.joblib').is_file()
+    policy['historical_model_id']=historical_id
+    policy['historical_available']=historical_available
+    policy['available']=historical_available
+    policy['provenance']='historically_evaluated'
+    if not historical_available:
+        active=service.root/'results'/'active_detector.json'
+        if active.is_file():
+            try:
+                identifier=json.loads(active.read_text())['model_id']
+                meta=json.loads((service.root/'models'/f'{identifier}.json').read_text())
+                if meta.get('provenance')=='locally_retrained_demo' and (service.root/'models'/f'{identifier}.joblib').is_file():
+                    policy['historical_expected_test_metrics']=policy.pop('expected_test_metrics')
+                    policy['historical_validation_calibration']=policy.pop('validation_calibration')
+                    policy.update(model_id=identifier,attack_threshold=meta['attack_threshold'],
+                                  available=True,provenance='locally_retrained_demo',
+                                  evaluation_note=meta['evaluation_note'])
+            except (KeyError, ValueError, OSError):
+                pass
     return jsonify(policy)
 
 

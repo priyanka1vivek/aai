@@ -102,9 +102,26 @@ async function action(button, target, fn) {
 function detector() {
   if (!state.policy?.available)
     throw Error(
-      "Calibrated detector is unavailable. Restore its saved model artifacts and restart the server.",
+      "No runnable detector is available. Run python bootstrap_demo.py, then refresh this page, or restore the historical model artifacts.",
     );
   return state.policy.model_id;
+}
+function renderDetectorStatus() {
+  const p = state.policy;
+  const demo = p?.provenance === "locally_retrained_demo";
+  $("detector-eyebrow").textContent = demo ? "LOCALLY RETRAINED DETECTOR" : "CALIBRATED DETECTOR";
+  $("detector-title").textContent = demo
+    ? "Locally retrained demonstration detector"
+    : "Calibrated PSO detector — exploratory NSL-KDD evaluation.";
+  $("evidence-title").textContent = demo
+    ? "Newly retrained detector · measured separately"
+    : "Historical calibrated detector";
+  $("threshold-note").textContent = `Exploratory test-set curve for the selected model. Its saved operating point is ${p?.attack_threshold ?? "—"}. Do not tune on this test set.`;
+  $("backend-status").textContent = p?.available
+    ? (demo ? "Retrained demonstration detector ready" : "Historical detector ready")
+    : "Saved detector unavailable";
+  $("detector-error").hidden = !!p?.available;
+  if (!p?.available) errorAt("detector-error", "Historical model files are absent. Run python bootstrap_demo.py to train a separate detector from the committed data, then refresh. Recorded evaluation reports remain viewable.");
 }
 function currentModel() {
   return state.models.find((m) => m.model_id === state.policy?.model_id);
@@ -275,11 +292,11 @@ function renderSaved() {
   } else {
     $("detector-evidence").textContent = "Saved detector metadata unavailable.";
   }
-  const headers = ["Method", "Model ID", "Inputs", "Accuracy", "Attack recall", "F1", "False alarms"];
-  const modelRows = models => models.map(m => [m.algorithm, m.model_id, m.feature_count,
+  const headers = ["Method", "Model ID", "Artifact", "Provenance", "Inputs", "Accuracy", "Attack recall", "F1", "False alarms"];
+  const modelRows = models => models.map(m => [m.algorithm, m.model_id, m.available ? "Runnable" : "Metadata only", m.provenance, m.feature_count,
     pct(m.test_metrics.accuracy), pct(m.test_metrics.recall), pct(m.test_metrics.f1), pct(m.test_metrics.false_alarm_rate)]);
   $("model-inventory").innerHTML = table(headers, modelRows(model ? [model] : [])) +
-    `<details><summary>Other saved models and verification runs</summary><p>Includes older experiments and small-budget smoke checks; these are not the headline detector.</p>${table(headers, modelRows(state.models.filter(m => m.model_id !== state.policy?.model_id)))}</details>`;
+    `<details><summary>Other saved models and verification runs</summary><p>Includes historical reports whose binary artifacts are absent, plus older experiments and verification runs. Metadata alone cannot classify traffic.</p>${table(headers, modelRows(state.models.filter(m => m.model_id !== state.policy?.model_id)))}</details>`;
 
 }
 function renderBenchmark() {
@@ -381,9 +398,7 @@ async function refreshDetector(full = false) {
       input.parentElement.classList.toggle("used", used.has(input.name));
       input.parentElement.firstChild.textContent = input.name + (used.has(input.name) ? " • used" : "");
     });
-    $("backend-status").textContent = policy.available ? "Calibrated detector ready" : "Saved detector unavailable";
-    $("detector-error").hidden = policy.available;
-    if (!policy.available) errorAt("detector-error", "The configured model file is unavailable. Recorded evaluation reports remain viewable, but live predictions need the trained model.");
+    renderDetectorStatus();
     renderSaved();
     if (full) await reloadSaved();
     $("refresh-status").textContent = `Backend reports checked at ${new Date().toLocaleTimeString()} · automatic check every 30 seconds.`;
@@ -944,16 +959,7 @@ async function bootstrap() {
   if (results[0].status === "fulfilled") {
     state.policy = results[0].value;
     $("threshold").value = state.policy.attack_threshold ?? 0.01;
-    $("backend-status").textContent = state.policy.available
-      ? "Calibrated detector ready"
-      : "Saved detector unavailable";
-    if (!state.policy.available) {
-      errorAt(
-        "detector-error",
-        "The configured calibrated model is unavailable. Add the model/results archive beside app.py and restart. Saved evaluation reports remain viewable.",
-      );
-      $("detector-error").hidden = false;
-    }
+    renderDetectorStatus();
   } else {
     errorAt("global-error", results[0].reason);
     $("global-error").hidden = false;

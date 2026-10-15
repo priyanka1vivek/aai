@@ -16,6 +16,10 @@ from .runner import experiment
 from .storage import atomic_json
 
 
+class ModelUnavailable(Exception):
+    pass
+
+
 class ProjectService:
     def __init__(self,root=ROOT):
         self.root=root;self.jobs={};self.lock=Lock();self.worker=ThreadPoolExecutor(max_workers=1)
@@ -132,14 +136,23 @@ class ProjectService:
         return {'job_id':job_id,'status':'queued'}
 
     def models(self):
-        return [json.loads(p.read_text()) for p in sorted((self.root/'models').glob('*.json'))]
+        output=[]
+        for path in sorted((self.root/'models').glob('*.json')):
+            meta=json.loads(path.read_text())
+            output.append({**meta, 'available':path.with_suffix('.joblib').is_file(),
+                           'provenance':meta.get('provenance','historical_metadata')})
+        return output
 
     def model(self,identifier):
         if not isinstance(identifier,str) or not re.fullmatch('[a-f0-9]{32}',identifier):
             raise ValueError('Invalid model ID.')
         path=self.root/'models'/f'{identifier}.joblib'
-        if not path.is_file():raise KeyError('Model not found.')
-        if identifier not in self.loaded_models:self.loaded_models[identifier]=joblib.load(path)
+        if not path.is_file():raise KeyError('Model artifact unavailable. Run python bootstrap_demo.py for a separate demonstration detector, or restore the original model files.')
+        if identifier not in self.loaded_models:
+            try:
+                self.loaded_models[identifier]=joblib.load(path)
+            except Exception as exc:
+                raise ModelUnavailable(f'Could not load saved model {identifier}; restore or retrain its artifact. ({type(exc).__name__})') from exc
         return self.loaded_models[identifier]
 
     def predict(self,payload):
@@ -179,7 +192,11 @@ class ProjectService:
         return output
 
     def threshold_curve(self,model_id):
-        return threshold_sweep(self.model(model_id),self.root)
+        saved=self.model(model_id)
+        cache=self.root/'models'/f'{model_id}.predictions.npz'
+        if not cache.is_file():
+            raise KeyError('Prediction cache unavailable for this model. Rebuild the detector or restore its matching cache.')
+        return threshold_sweep(saved,self.root)
 
     def what_if(self,payload):
         connection=payload.get('connection')
