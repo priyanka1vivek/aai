@@ -317,6 +317,8 @@ function renderSaved() {
 function renderBenchmark() {
   const b = state.benchmark;
   if (!b) {
+    $("overview-summary").textContent = "The recorded comparison is unavailable. Check that the original experiment report is present.";
+    $("overview-features").textContent = "";
     $("benchmark").textContent =
       "Requested original benchmark was not returned by /api/results.";
     $("timing-evidence").textContent = "No saved timing comparison is available.";
@@ -326,7 +328,7 @@ function renderBenchmark() {
   const fmt = (s, k, percent = true) => {
     const m = s.metrics[k];
     return m
-      ? `${percent ? pct(m.mean) : Number(m.mean).toFixed(2)} ± ${percent ? pct(m.std) : Number(m.std).toFixed(2)}`
+      ? `${percent ? pct(m.mean) : Number(m.mean).toFixed(2)}${m.std == null ? "" : ` ± ${percent ? pct(m.std) : Number(m.std).toFixed(2)}`}`
       : "—";
   };
   $("benchmark").innerHTML =
@@ -368,6 +370,28 @@ function renderBenchmark() {
       ["Test F1", paired.test_f1?.p_value_bonferroni_two_metrics?.toFixed(3) ?? "—", "No significant difference at 0.05"],
     ]) + `<p class="note">A fixed data split and five seeds limit these comparisons. Confidence intervals against full features are stored in the experiment report.</p>`;
   renderFrequency();
+  renderOverview();
+}
+function renderOverview() {
+  const b = state.benchmark;
+  if (!b) return;
+  const method = $("overview-method").value;
+  const current = b.summaries.find(s => s.algorithm === method);
+  const full = b.summaries.find(s => s.algorithm === "full");
+  if (!current || !full) {
+    $("overview-summary").textContent = "The saved comparison is incomplete.";
+    return;
+  }
+  const metrics = current.metrics;
+  const selected = b.statistics?.paired_stratified_test_bootstrap?.find(r => r.method === method);
+  const representative = b.records.find(r => r.model_id === selected?.model_id) || b.records.find(r => r.algorithm === method);
+  const name = {ga: "Genetic Algorithm", pso: "Particle Swarm Optimization", full: "All features", chi_square: "Chi-square"}[method];
+  const baselineAccuracy = full.metrics.accuracy.mean;
+  const delta = metrics.accuracy.mean - baselineAccuracy;
+  const features = metrics.features.mean;
+  const label = current.runs === 1 ? "one saved baseline" : `${current.runs} optimizer seeds`;
+  $("overview-summary").innerHTML = `<div class="study-result"><div class="study-result-main"><span class="eyebrow">${esc(name)} · ${esc(label)}</span><strong>${esc(features.toFixed(features % 1 ? 1 : 0))}<small> / 41 inputs</small></strong><p>${esc((41 - features).toFixed(features % 1 ? 1 : 0))} fewer original inputs on average</p></div><div class="study-kpis"><div><span>Held-out accuracy</span><strong>${pct(metrics.accuracy.mean)}</strong></div><div><span>Attack recall</span><strong>${pct(metrics.recall.mean)}</strong></div><div><span>False-alarm rate</span><strong>${pct(metrics.false_alarm_rate.mean)}</strong></div></div></div><div class="study-bars"><div><span>Selected inputs</span><div class="bar"><i style="width:${(features / 41 * 100).toFixed(1)}%"></i></div><b>${esc(features.toFixed(1))} / 41</b></div><div><span>Test accuracy</span><div class="bar"><i style="width:${(metrics.accuracy.mean * 100).toFixed(1)}%"></i></div><b>${pct(metrics.accuracy.mean)}</b></div></div><p class="study-context">Compared with all 41 inputs: <strong>${method === "full" ? "reference method" : `${delta >= 0 ? "+" : ""}${(delta * 100).toFixed(2)} percentage points accuracy`}</strong>. The five GA/PSO runs vary; see Results & Evidence for standard deviations and statistical checks.</p>`;
+  $("overview-features").innerHTML = representative ? `<div class="study-feature-heading"><strong>${method === "full" ? "All original inputs" : "Example saved subset"}</strong><span>${method === "ga" || method === "pso" ? "One saved run, separate from the averages above" : "Saved baseline"}</span></div>${chips(representative.selected_features)}` : "No saved feature list available.";
 }
 function renderFrequency() {
   const summary = state.benchmark?.summaries.find(
@@ -396,7 +420,10 @@ async function reloadSaved() {
       (r) => r.result_id === "experiment_31e9b36582044da995b33f1b20eb6c92",
     )?.result;
     renderBenchmark();
-  } else errorAt("benchmark", settled[1].reason);
+  } else {
+    errorAt("benchmark", settled[1].reason);
+    $("overview-summary").textContent = "The recorded study could not be loaded. Check the backend and refresh.";
+  }
 }
 async function refreshDetector(full = false) {
   if (state.refreshing) return;
@@ -463,7 +490,8 @@ function buildControls() {
           `<label>${label}<input name="${name}" type="number" value="${value}" min="${min}" max="${max}" step="${step}" required></label>`,
       )
       .join("");
-  $("search-controls").innerHTML = html(controls);
+  $("quick-controls").innerHTML = html(controls.slice(0, 3));
+  $("search-controls").innerHTML = html(controls.slice(3));
   $("ga-controls").innerHTML = html([
     ["mutation_rate", "Mutation rate", 0.02439, 0, 1, 0.00001],
     ["crossover_rate", "Crossover rate", 0.8, 0, 1, 0.01],
@@ -492,6 +520,7 @@ function renderMask() {
 function config() {
   const out = {};
   for (const id of [
+    "quick-controls",
     "search-controls",
     $("algorithm").value === "ga" ? "ga-controls" : "pso-controls",
   ])
@@ -687,6 +716,10 @@ async function replayStep() {
   }
 }
 function bind() {
+  $("overview-method").onchange = renderOverview;
+  $("overview-run").onclick = () => $("tab-optimization").click();
+  $("overview-evidence").onclick = () => $("tab-evidence").click();
+  $("overview-demo").onclick = () => $("tab-detection").click();
   $("see-search").onclick = () => $("tab-optimization").click();
   $("refresh-results").onclick = () => refreshDetector(true);
   document.querySelectorAll("[data-tab]").forEach((b, index) => {
