@@ -25,8 +25,8 @@ def build(root=ROOT):
         path = root / 'data' / name
         if not path.is_file():
             raise FileNotFoundError(f'{path} is missing. Restore the committed NSL-KDD data files.')
-        with path.open('rb') as source:
-            digest = hashlib.file_digest(source, 'sha256').hexdigest()
+        # Git may check text files out with CRLF on Windows. Hash the canonical LF bytes.
+        digest = hashlib.sha256(path.read_bytes().replace(b'\r\n', b'\n')).hexdigest()
         if digest != expected:
             raise ValueError(f'{name} differs from the committed dataset (SHA-256 {digest}).')
     active = root / 'results' / 'active_detector.json'
