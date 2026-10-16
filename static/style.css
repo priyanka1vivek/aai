@@ -364,6 +364,11 @@ svg {
   font-size: 11px;
   margin-bottom: 4px;
 }
+#fitness-chart svg,
+#validation-chart svg {
+  max-width: 1000px;
+  margin-inline: auto;
+}
 .bar-row {
   display: grid;
   grid-template-columns: 210px 1fr 50px;
