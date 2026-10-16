@@ -484,7 +484,6 @@ function busyJob(busy) {
   state.jobActive = busy;
   $("run-search").disabled = busy;
   $("cancel-job").disabled = !busy;
-  $("finalize-job").disabled = busy;
 }
 function watchJob(id, kind) {
   state.job = id;
@@ -496,7 +495,6 @@ function watchJob(id, kind) {
     );
   } catch {}
   busyJob(true);
-  $("finalize-job").hidden = true;
   clearTimeout(state.poll);
   pollJob();
 }
@@ -548,7 +546,7 @@ async function pollJob() {
           r.result?.feature_count ?? latest.feature_count,
         );
         $("selected-search").innerHTML =
-          `<h4>${r.status === "completed" ? "Final search subset" : "Current best subset"}</h4>${chips(r.result?.selected_features || state.features.filter((_, i) => latest?.best_mask[i]))}<p class="note">Constraint feasibility: ${esc(m?.security_feasible ?? latest?.security_feasible)} · Validation metrics, not test results.</p>`;
+          `<h4>${r.status === "completed" ? "Final search subset" : "Current best subset"}</h4>${chips(r.result?.selected_features || state.features.filter((_, i) => latest?.best_mask[i]))}`;
       }
     }
     if (["queued", "running"].includes(r.status)) {
@@ -558,26 +556,6 @@ async function pollJob() {
       try {
         sessionStorage.removeItem("sentinel-job");
       } catch {}
-      if (r.status === "completed" && state.jobKind === "search") {
-        state.searchJob = state.job;
-        $("finalize-job").hidden = false;
-      }
-      if (r.status === "completed" && state.jobKind === "finalize") {
-        const records = r.result?.records || [];
-        $("final-output").innerHTML =
-          "<h4>Final trained model · test evaluation</h4>" +
-          table(
-            ["Model", "Accuracy", "Recall", "F1", "False alarms"],
-            records.map((m) => [
-              m.model_id,
-              pct(m.test_metrics.accuracy),
-              pct(m.test_metrics.recall),
-              pct(m.test_metrics.f1),
-              pct(m.test_metrics.false_alarm_rate),
-            ]),
-          );
-        await reloadSaved();
-      }
       if (r.error) errorAt("search-error", r.error);
     }
   } catch (e) {
@@ -786,7 +764,6 @@ function bind() {
         initial_masks: state.masks,
       });
       $("search-error").innerHTML = "";
-      $("final-output").innerHTML = "";
       state.searchJob = null;
       watchJob(r.job_id, "search");
     }).finally(() => busyJob(state.jobActive));
@@ -798,12 +775,6 @@ function bind() {
       ).cancellation_requested
         ? "Cancellation requested; waiting for the backend."
         : "Cancellation response received.";
-    });
-  $("finalize-job").onclick = (e) =>
-    action(e.target, "search-error", async () => {
-      const r = await api(`/api/finalize/${state.searchJob}`, {});
-      $("search-error").innerHTML = "";
-      watchJob(r.job_id, "finalize");
     });
   for (const mode of ["whatif", "challenge"])
     $("mode-" + mode).onclick = () => {
