@@ -43,7 +43,7 @@ header {
 .brand small {
   display: block;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 2px;
 }
 main {
@@ -55,7 +55,7 @@ main {
   margin-bottom: 32px;
 }
 .eyebrow {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 750;
   letter-spacing: 2px;
   color: var(--teal);
@@ -101,7 +101,7 @@ nav button {
   padding: 18px 16px;
   white-space: nowrap;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 nav button span {
   margin-left: 8px;
@@ -127,7 +127,7 @@ nav button[aria-selected="true"] {
   color: var(--teal);
   padding: 5px 12px;
   border-radius: 20px;
-  font-size: 11px;
+  font-size: 12px;
   white-space: nowrap;
 }
 .metrics {
@@ -145,7 +145,7 @@ nav button[aria-selected="true"] {
 .metric span {
   display: block;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .metric strong {
   font-size: 30px;
@@ -219,7 +219,7 @@ button:disabled {
 }
 label {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
 }
 input,
@@ -261,7 +261,7 @@ a:focus-visible {
   font-size: 12px;
 }
 .live-dot {
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 1px;
   color: var(--teal);
 }
@@ -322,7 +322,7 @@ td.wrap {
   gap: 5px;
 }
 .feature-grid button {
-  font-size: 10px;
+  font-size: 11px;
   padding: 8px 5px;
   overflow-wrap: anywhere;
 }
@@ -352,7 +352,7 @@ summary {
 }
 summary span {
   float: right;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--teal);
 }
 svg {
@@ -361,8 +361,9 @@ svg {
   display: block;
 }
 .chart-caption {
-  font-size: 11px;
-  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
 }
 #fitness-chart svg,
 #validation-chart svg {
@@ -375,7 +376,7 @@ svg {
   gap: 12px;
   align-items: center;
   margin: 8px 0;
-  font-size: 11px;
+  font-size: 12px;
 }
 .bar {
   background: var(--soft);
@@ -455,7 +456,7 @@ svg {
 .detection-workspace { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .85fr); gap: 28px; align-items: start; }
 .quick-fields { max-height: none; overflow: visible; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .quick-fields label { font-size: 13px; font-weight: 650; }
-.quick-fields small { display: block; color: var(--muted); font-weight: 400; font-size: 11px; min-height: 24px; }
+.quick-fields small { display: block; color: var(--muted); font-weight: 400; font-size: 12px; min-height: 24px; }
 .advanced-fields { border-top: 1px solid var(--line); padding: 13px 0; }
 .advanced-fields summary { font-size: 13px; color: var(--teal); }
 .advanced-fields .fields { max-height: 250px; }
@@ -494,7 +495,7 @@ nav button[aria-selected="true"] { background: var(--ink); border-color: var(--i
 .overview-lead p { color: #d0e3de; font-size: 15px; max-width: 750px; margin-bottom: 0; }
 .study-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 18px 0 28px; }
 .study-steps > div { background: white; border: 1px solid var(--line); border-radius: 12px; padding: 23px; display: flex; flex-direction: column; gap: 8px; }
-.study-steps b { color: var(--teal); font-size: 11px; letter-spacing: .1em; }
+.study-steps b { color: var(--teal); font-size: 12px; letter-spacing: .1em; }
 .study-steps strong { font-size: 16px; line-height: 1.3; }
 .study-steps span { color: var(--muted); font-size: 13px; }
 .study-comparison { padding: clamp(22px, 3vw, 38px); border-radius: 16px; }
@@ -567,7 +568,7 @@ input::file-selector-button { background: #244459; color: white; border: 0; padd
 .feature-grid button[aria-pressed="true"], .modes button[aria-pressed="true"] { background: #164d5a; color: #b3fffa; border-color: var(--teal); }
 th { background: #192d43; color: #b9cbdb; }
 td, th { border-color: #294058; }
-svg text { fill: #a8bed0; }
+svg text { fill: #a8bed0; font-family: inherit; }
 .chart-caption { color: #b3c7d8; }
 .map-intro { display: flex; justify-content: space-between; align-items: end; gap: 22px; padding: 22px 0; border-top: 1px solid var(--line); }
 .map-intro h4 { font-size: 26px; margin: 6px 0; }
@@ -578,8 +579,8 @@ svg text { fill: #a8bed0; }
 .feature-tile { min-height: 82px; min-width: 0; border: 1px solid #2a3d52; border-radius: 9px; background: #0b1829; padding: 10px; transition: transform .18s, border-color .18s, background .18s; }
 .feature-tile.active { border-color: rgba(78, 224, 221, calc(.25 + var(--frequency) * .65)); background: rgba(31, 132, 150, calc(.13 + var(--frequency) * .38)); }
 .feature-tile:hover { transform: translateY(-4px); border-color: #84fffa; }
-.feature-tile span { display: block; color: #83a0b5; font-size: 10px; letter-spacing: .1em; margin-bottom: 10px; }
-.feature-tile strong { display: block; color: #daedfa; font: 500 11px/1.25 Inter, system-ui, sans-serif; overflow-wrap: anywhere; }
+.feature-tile span { display: block; color: #83a0b5; font-size: 11px; letter-spacing: .1em; margin-bottom: 10px; }
+.feature-tile strong { display: block; color: #daedfa; font: 500 12px/1.25 Inter, system-ui, sans-serif; overflow-wrap: anywhere; }
 .feature-tile.active strong { color: #d2fffc; }
 #historical-card { border-color: #315267; }
 #historical-card h3 { margin-top: 6px; }
@@ -587,4 +588,4 @@ a { color: #7cebea; }
 a:hover { color: #b7fffc; }
 @media (max-width: 1000px) { .feature-map { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 @media (max-width: 700px) { nav { grid-template-columns: repeat(2, minmax(0, 1fr)); } .feature-map { grid-template-columns: repeat(4, minmax(0, 1fr)); } .map-intro { align-items: start; flex-direction: column; } }
-@media (max-width: 520px) { .intro { padding-top: 12px; } nav button { min-height: 54px; font-size: 10px; } nav button span { display: block; margin: 1px 0 0; font-size: 12px; } .feature-map { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; } .feature-tile { min-height: 70px; padding: 7px; } }
+@media (max-width: 520px) { .intro { padding-top: 12px; } nav button { min-height: 54px; font-size: 11px; } nav button span { display: block; margin: 1px 0 0; font-size: 12px; } .feature-map { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; } .feature-tile { min-height: 70px; padding: 7px; } }
