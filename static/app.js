@@ -246,7 +246,7 @@ function chart(id, rows, series, xKey, title) {
     x = (v) => 48 + ((v - xmin) / (xmax - xmin || 1)) * 550,
     y = (v) => 180 - ((v - lo) / (hi - lo || 1)) * 140;
   $(id).innerHTML =
-    `<p class="chart-caption">${esc(title)} · ${series.map((s) => `<span style="color:${s.color}">${esc(s.name)}</span>`).join(" / ")}</p><svg viewBox="0 0 640 220" role="img" aria-label="${esc(title)}"><path d="M48 35V180H600" fill="none" stroke="#cddcda"/><text x="3" y="42" font-size="12" fill="#617479">${hi.toFixed(3)}</text><text x="3" y="184" font-size="12" fill="#617479">${lo.toFixed(3)}</text>${series
+    `<p class="chart-caption">${esc(title)} · ${series.map((s) => `<span style="color:${s.color}">${esc(s.name)}</span>`).join(" / ")}</p><svg viewBox="0 0 640 220" role="img" aria-label="${esc(title)}"><path d="M48 35V180H600" fill="none" stroke="#cddcda"/><text x="3" y="42" font-size="11" fill="#617479">${hi.toFixed(3)}</text><text x="3" y="184" font-size="11" fill="#617479">${lo.toFixed(3)}</text>${series
       .map(
         (s) =>
           `<polyline fill="none" stroke="${s.color}" stroke-width="2.5" points="${valid
@@ -262,7 +262,7 @@ function chart(id, rows, series, xKey, title) {
       )
       .join(
         "",
-      )}<text x="48" y="202" font-size="12" fill="#617479">${esc(xmin)}</text><text x="575" y="202" font-size="12" fill="#617479">${esc(xmax)}</text><text x="280" y="215" font-size="12" fill="#617479">${esc(xKey)}</text></svg>`;
+      )}<text x="48" y="202" font-size="12" fill="#617479">${esc(xmin)}</text><text x="575" y="202" font-size="12" fill="#617479">${esc(xmax)}</text><text x="280" y="215" font-size="11" fill="#617479">${esc(xKey)}</text></svg>`;
 }
 function renderSaved() {
   const model = currentModel(),
