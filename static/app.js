@@ -132,10 +132,6 @@ function renderDetectorStatus() {
     ["accuracy", "recall", "f1", "false_alarm_rate"].every(key =>
       Number.isFinite(active[key]) && Math.abs(active[key] - historical[key]) < 1e-10));
   $("historical-card").hidden = reproduced || !!p?.historical_available;
-  $("matching-report-note").hidden = !reproduced;
-  $("matching-report-note").textContent = reproduced
-    ? "This newly trained model reproduced the historical report's measured scores on the same KDDTest+ records. It is a separate saved model; the original binary is unavailable."
-    : "";
 }
 function currentModel() {
   return state.models.find((m) => m.model_id === state.policy?.model_id);
@@ -152,7 +148,6 @@ function metricCards(m, count) {
     ["Attack recall", pct(m.recall)],
     ["F1", pct(m.f1)],
     ["Selected inputs", `${count} of 41`],
-    ["False-alarm rate", pct(m.false_alarm_rate)],
   ]
     .map(
       ([k, v]) =>
@@ -284,7 +279,7 @@ function renderSaved() {
           ["Normal", cm[0][0], cm[0][1]],
           ["Attack", cm[1][0], cm[1][1]],
         ],
-      )}<h4>Selected features</h4>${chips(model.selected_features)}<div class="notice ${model.test_security_constraints_met ? "" : "error"}">Recorded test security constraints met: ${esc(model.test_security_constraints_met)}. Recall target ${pct(model.config?.min_attack_recall)} / false-alarm ceiling ${pct(model.config?.max_false_alarm_rate)}.</div><p class="note">${esc(model.evaluation_note || state.policy.evaluation_note)}</p>`;
+      )}<h4>Selected features</h4>${chips(model.selected_features)}<p class="note">${esc(model.evaluation_note || state.policy.evaluation_note)}</p>`;
     const rows = model.security_breakdown?.attack_types || [];
     $("attack-breakdown").innerHTML = table(
       [
@@ -307,11 +302,6 @@ function renderSaved() {
   } else {
     $("detector-evidence").textContent = "Saved detector metadata unavailable.";
   }
-  const headers = ["Method", "Model ID", "Artifact", "Provenance", "Inputs", "Accuracy", "Attack recall", "F1", "False alarms"];
-  const modelRows = models => models.map(m => [m.algorithm, m.model_id, m.available ? "Runnable" : "Metadata only", m.provenance, m.feature_count,
-    pct(m.test_metrics.accuracy), pct(m.test_metrics.recall), pct(m.test_metrics.f1), pct(m.test_metrics.false_alarm_rate)]);
-  $("model-inventory").innerHTML = table(headers, modelRows(model ? [model] : [])) +
-    `<details><summary>Other saved models and verification runs</summary><p>Includes historical reports whose binary artifacts are absent, plus older experiments and verification runs. Metadata alone cannot classify traffic.</p>${table(headers, modelRows(state.models.filter(m => m.model_id !== state.policy?.model_id)))}</details>`;
 
 }
 function renderBenchmark() {
@@ -366,7 +356,6 @@ async function reloadSaved() {
     state.models = settled[0].value.models;
     renderSaved();
   } else {
-    errorAt("model-inventory", settled[0].reason);
   }
   if (settled[1].status === "fulfilled") {
     state.benchmark = settled[1].value.results.find(
