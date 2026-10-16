@@ -589,3 +589,16 @@ a:hover { color: #b7fffc; }
 @media (max-width: 1000px) { .feature-map { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 @media (max-width: 700px) { nav { grid-template-columns: repeat(2, minmax(0, 1fr)); } .feature-map { grid-template-columns: repeat(4, minmax(0, 1fr)); } .map-intro { align-items: start; flex-direction: column; } }
 @media (max-width: 520px) { .intro { padding-top: 12px; } nav button { min-height: 54px; font-size: 11px; } nav button span { display: block; margin: 1px 0 0; font-size: 12px; } .feature-map { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; } .feature-tile { min-height: 70px; padding: 7px; } }
+
+/* Consistent, readable type scale for the detector tab. */
+#detection p,
+#detection .note { font-size: 14px; line-height: 1.5; }
+#detection summary,
+#detection .secondary-tools summary { font-size: 18px; line-height: 1.35; }
+#detection .advanced-fields summary { font-size: 15px; }
+#detection .chip { font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; }
+#detection .quick-fields label { font-size: 14px; }
+#detection .quick-fields small { font-size: 13px; }
+#detection .method-flow strong { font-size: 16px; }
+#detection .pill,
+#detection table { font-size: 13px; }
