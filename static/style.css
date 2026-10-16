@@ -136,6 +136,7 @@ nav button[aria-selected="true"] {
   gap: 12px;
   margin: 18px 0;
 }
+#evidence-metrics { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .metric {
   background: white;
   padding: 22px;
@@ -151,9 +152,6 @@ nav button[aria-selected="true"] {
   font-size: 30px;
   letter-spacing: -1px;
   display: block;
-}
-.metric:last-child strong {
-  color: var(--red);
 }
 .compact {
   grid-template-columns: repeat(2, 1fr);
@@ -399,6 +397,7 @@ svg {
   .metrics {
     grid-template-columns: repeat(3, 1fr);
   }
+  #evidence-metrics { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .fields {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -417,6 +416,7 @@ svg {
   .metrics {
     grid-template-columns: repeat(2, 1fr);
   }
+  #evidence-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .metric {
     padding: 15px;
   }
