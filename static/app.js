@@ -897,7 +897,7 @@ function bind() {
             pct(row.false_alarm_rate),
           ]),
         ) +
-        `<p class="note">${esc(r.note)}</p>`;
+
       chart(
         "threshold-chart",
         r.rows,
