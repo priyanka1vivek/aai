@@ -224,7 +224,7 @@ async function sample(target, label) {
     $("manual-output").textContent = "Ready. Run detection to see the model decision.";
   } else if ($(target + "-output")) {
     $(target + "-output").textContent =
-      `Real ${r.actual_label} sample · test row ${r.test_row}. Edits create a synthetic scenario.`;
+      `Real ${r.actual_label} sample · test row ${r.test_row}`;
   }
 }
 function chart(id, rows, series, xKey, title) {
