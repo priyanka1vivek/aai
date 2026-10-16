@@ -111,16 +111,16 @@
               <div id="manual-output" class="output">Choose a connection and run detection to see the result here.</div>
             </div>
           </div>
-          <p class="note">Edits to a recorded connection are synthetic what-if changes. The attack score is an uncalibrated model estimate, not certainty.</p>
+          
         </article>
         <details class="card">
           <summary>Which inputs does this detector actually use?</summary>
-          <p class="note">Feature selection keeps a best-found subset of the original 41 inputs. The model uses the listed inputs; it ignores fields outside this subset.</p>
+          <p class="note">Feature selection keeps a best-found subset of the original 41 inputs.</p>
           <div id="active-features" class="chips"></div>
         </details>
         <details class="card secondary-tools">
           <summary>Replay recorded test connections</summary>
-          <p>Step through held-out NSL-KDD connections to observe the detector's decisions. This is dataset playback, not live packet capture.</p>
+          <p>Step through held-out NSL-KDD connections to observe the detector's decisions.</p>
               <div class="actions">
                 <button id="replay-start" class="primary" data-detector>Start</button>
                 <button id="replay-pause" disabled>Pause</button>
@@ -182,10 +182,6 @@
             ><button id="guess-attack" disabled>Attack</button>
           </div>
           <div id="challenge-output" aria-live="polite"></div>
-          <p class="note">
-            Missed attack: an attack guessed normal. False alarm: a normal
-            connection guessed attack.
-          </p>
         </article>
         </details>
       </section>
