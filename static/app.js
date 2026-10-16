@@ -114,7 +114,6 @@ function renderDetectorStatus() {
   $("evidence-title").textContent = demo
     ? "Newly retrained detector · measured separately"
     : "Historical calibrated detector";
-  $("threshold-note").textContent = `Exploratory test-set curve for the selected model. Its saved operating point is ${p?.attack_threshold ?? "—"}.`;
   $("detector-error").hidden = !!p?.available;
   if (!p?.available) errorAt("detector-error", "Historical model files are absent. Run python bootstrap_demo.py to train a separate detector from the committed data, then refresh. Recorded evaluation reports remain viewable.");
   $("historical-note").textContent = p?.historical_available
@@ -385,7 +384,6 @@ async function refreshDetector(full = false) {
       $("challenge-values").innerHTML = "";
       $("challenge-output").textContent = "Detector changed. Start a new challenge.";
       for (const target of ["manual", "whatif"]) $(target + "-output").textContent = "Detector updated. Submit again for a new prediction.";
-      $("threshold-output").innerHTML = "";
     }
     if (!policy.available && state.replay.running) pauseReplay();
     document.querySelectorAll("[data-detector]").forEach(b => {
@@ -883,32 +881,7 @@ function bind() {
     }
   };
   $("frequency-method").onchange = renderFrequency;
-  $("load-thresholds").onclick = (e) =>
-    action(e.target, "threshold-output", async () => {
-      const r = await api(`/api/thresholds/${detector()}`);
-      $("threshold-output").innerHTML =
-        '<div id="threshold-chart"></div>' +
-        table(
-          ["Threshold", "Accuracy", "Attack recall", "False-alarm rate"],
-          r.rows.map((row) => [
-            row.threshold.toFixed(3),
-            pct(row.accuracy),
-            pct(row.recall),
-            pct(row.false_alarm_rate),
-          ]),
-        ) +
 
-      chart(
-        "threshold-chart",
-        r.rows,
-        [
-          { key: "recall", name: "Attack recall", color: "#087c72" },
-          { key: "false_alarm_rate", name: "False alarms", color: "#b83f43" },
-        ],
-        "threshold",
-        "Test-set threshold tradeoffs",
-      );
-    });
 }
 async function bootstrap() {
   buildControls();
