@@ -170,6 +170,9 @@ nav button[aria-selected="true"] {
   gap: 22px;
   align-items: start;
 }
+.search-layout {
+  grid-template-columns: 1fr;
+}
 .card {
   background: #fff;
   border: 1px solid var(--line);
