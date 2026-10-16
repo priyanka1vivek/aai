@@ -368,6 +368,7 @@ svg {
   max-width: 1000px;
   margin-inline: auto;
 }
+#threshold-chart svg { max-width: 1000px; margin-inline: auto; }
 .bar-row {
   display: grid;
   grid-template-columns: 210px 1fr 50px;
