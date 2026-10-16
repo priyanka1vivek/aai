@@ -115,9 +115,6 @@ function renderDetectorStatus() {
     ? "Newly retrained detector · measured separately"
     : "Historical calibrated detector";
   $("threshold-note").textContent = `Exploratory test-set curve for the selected model. Its saved operating point is ${p?.attack_threshold ?? "—"}. Do not tune on this test set.`;
-  $("backend-status").textContent = p?.available
-    ? (demo ? "Retrained demonstration detector ready" : "Historical detector ready")
-    : "Saved detector unavailable";
   $("detector-error").hidden = !!p?.available;
   if (!p?.available) errorAt("detector-error", "Historical model files are absent. Run python bootstrap_demo.py to train a separate detector from the committed data, then refresh. Recorded evaluation reports remain viewable.");
   $("historical-note").textContent = p?.historical_available
@@ -960,7 +957,6 @@ async function bootstrap() {
   } else {
     errorAt("global-error", results[0].reason);
     $("global-error").hidden = false;
-    $("backend-status").textContent = "Backend error";
   }
   if (results[1].status === "fulfilled") {
     state.features = results[1].value.feature_names;
