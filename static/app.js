@@ -114,7 +114,7 @@ function renderDetectorStatus() {
   $("evidence-title").textContent = demo
     ? "Newly retrained detector · measured separately"
     : "Historical calibrated detector";
-  $("threshold-note").textContent = `Exploratory test-set curve for the selected model. Its saved operating point is ${p?.attack_threshold ?? "—"}. Do not tune on this test set.`;
+  $("threshold-note").textContent = `Exploratory test-set curve for the selected model. Its saved operating point is ${p?.attack_threshold ?? "—"}.`;
   $("detector-error").hidden = !!p?.available;
   if (!p?.available) errorAt("detector-error", "Historical model files are absent. Run python bootstrap_demo.py to train a separate detector from the committed data, then refresh. Recorded evaluation reports remain viewable.");
   $("historical-note").textContent = p?.historical_available
@@ -276,7 +276,7 @@ function renderSaved() {
           ["Normal", cm[0][0], cm[0][1]],
           ["Attack", cm[1][0], cm[1][1]],
         ],
-      )}<h4>Selected features</h4>${chips(model.selected_features)}<p class="note">${esc(model.evaluation_note || state.policy.evaluation_note)}</p>`;
+      )}<h4>Selected features</h4>${chips(model.selected_features)}`;
     const rows = model.security_breakdown?.attack_types || [];
     $("attack-breakdown").innerHTML = table(
       [
