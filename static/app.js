@@ -366,8 +366,6 @@ async function reloadSaved() {
 async function refreshDetector(full = false) {
   if (state.refreshing) return;
   state.refreshing = true;
-  $("refresh-results").disabled = true;
-  $("refresh-status").textContent = "Checking backend evaluation reports…";
   try {
     const [policy, inventory] = await Promise.all([api("/api/default-detector"), api("/api/models")]);
     const changed = state.policy?.model_id !== policy.model_id;
@@ -399,12 +397,9 @@ async function refreshDetector(full = false) {
     renderDetectorStatus();
     renderSaved();
     if (full) await reloadSaved();
-    $("refresh-status").textContent = `Backend reports checked at ${new Date().toLocaleTimeString()} · automatic check every 30 seconds.`;
   } catch (e) {
-    $("refresh-status").textContent = `Refresh failed: ${e.message}. Displayed reports may be stale.`;
   } finally {
     state.refreshing = false;
-    $("refresh-results").disabled = false;
   }
 }
 function buildControls() {
@@ -636,7 +631,6 @@ function bind() {
   $("overview-evidence").onclick = () => $("tab-evidence").click();
   $("overview-demo").onclick = () => $("tab-detection").click();
   $("see-search").onclick = () => $("tab-optimization").click();
-  $("refresh-results").onclick = () => refreshDetector(true);
   document.querySelectorAll("[data-tab]").forEach((b, index) => {
     b.onkeydown = (e) => {
       const tabs = [...document.querySelectorAll("[data-tab]")];
