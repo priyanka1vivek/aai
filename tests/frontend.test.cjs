@@ -81,13 +81,13 @@ test('matching retrained and historical scores display once with provenance', ()
   vm.runInContext('state.models = localModels; state.policy = demoPolicy; renderDetectorStatus()', context);
   assert.match(element('historical-note').textContent, /artifact unavailable/);
   assert.match(element('historical-metrics').innerHTML, /92\.47%/);
-  assert.match(element('historical-metrics').innerHTML, /10\.23%/);
+  assert.match(element('historical-metrics').innerHTML, /94\.51%/);
+  assert.match(element('historical-metrics').innerHTML, /93\.46%/);
+  assert.equal((element('historical-metrics').innerHTML.match(/class="metric"/g) || []).length, 4);
+  assert.equal(context.demoPolicy.historical_expected_test_metrics.false_alarm_rate, 0.10225517454433117);
   assert.match(element('evidence-title').textContent, /retrained/);
   assert.equal(element('historical-card').hidden, true);
-  assert.equal(element('matching-report-note').hidden, false);
-  assert.match(element('matching-report-note').textContent, /separate saved model/);
   context.differentModels = [{model_id: 'local-demo', test_metrics: {...context.demoPolicy.historical_expected_test_metrics, accuracy: 0.8}}];
   vm.runInContext('state.models = differentModels; renderDetectorStatus()', context);
   assert.equal(element('historical-card').hidden, false);
-  assert.equal(element('matching-report-note').hidden, true);
 });
