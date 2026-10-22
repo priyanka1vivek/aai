@@ -1,0 +1,442 @@
+{
+  "model_id": "0fb5396025a247ad8554784e1dc909e9",
+  "algorithm": "retrained_pso_mask",
+  "attack_threshold": 0.01,
+  "selected_features": [
+    "duration",
+    "service",
+    "src_bytes",
+    "num_failed_logins",
+    "logged_in",
+    "num_compromised",
+    "num_file_creations",
+    "num_shells",
+    "srv_serror_rate",
+    "srv_diff_host_rate",
+    "dst_host_diff_srv_rate"
+  ],
+  "feature_count": 11,
+  "validation_fitness": null,
+  "test_metrics": {
+    "accuracy": 0.9247249822569198,
+    "precision": 0.9243255601280292,
+    "recall": 0.9451414322449934,
+    "f1": 0.9346176073974186,
+    "confusion_matrix": [
+      [
+        8718,
+        993
+      ],
+      [
+        704,
+        12129
+      ]
+    ],
+    "false_alarm_rate": 0.10225517454433117,
+    "missed_attack_rate": 0.054858567755006624,
+    "false_alarms": 993,
+    "missed_attacks": 704
+  },
+  "prediction_timing": {
+    "batch_size": 1000,
+    "repeats": 5,
+    "classifier_ms_per_connection": 0.03834389999974519,
+    "pipeline_ms_per_connection": 0.041606999999203254,
+    "note": "Amortized batch latency, not isolated single-connection latency."
+  },
+  "security_breakdown": {
+    "available": true,
+    "attack_types": [
+      {
+        "attack_type": "apache2",
+        "connections": 737,
+        "detected": 714,
+        "missed": 23,
+        "recall": 0.9687924016282226,
+        "present_in_training": false
+      },
+      {
+        "attack_type": "back",
+        "connections": 359,
+        "detected": 359,
+        "missed": 0,
+        "recall": 1.0,
+        "present_in_training": true
+      },
+      {
+        "attack_type": "buffer_overflow",
+        "connections": 20,
+        "detected": 20,
+        "missed": 0,
+        "recall": 1.0,
+        "present_in_training": true
+      },
+      {
+        "attack_type": "ftp_write",
+        "connections": 3,
+        "detected": 3,
+        "missed": 0,
+        "recall": 1.0,
+        "present_in_training": true
+      },
+      {
+        "attack_type": "guess_passwd",
+        "connections": 1231,
+        "detected": 1148,
+        "missed": 83,
+        "recall": 0.9325751421608448,
+        "present_in_training": true
+      },
+      {
+        "attack_type": "httptunnel",
+        "connections": 133,
+        "detected": 129,
+        "missed": 4,
+        "recall": 0.9699248120300752,
+        "present_in_training": false
+      },
+      {
+        "attack_type": "imap",
+        "connections": 1,
+        "detected": 1,
+        "missed": 0,
+        "recall": 1.0,
+        "present_in_training": true
+      },
+      {
+        "attack_type": "ipsweep",
+        "connections": 141,
+        "detected": 141,
+        "missed": 0,
+        "recall": 1.0,
+        "present_in_training": true
+      },
+      {
+        "attack_type": "land",
+        "connections": 7,
+        "detected": 7,
+        "missed": 0,
+        "recall": 1.0,
+        "present_in_training": true
+      },
+      {
+        "attack_type": "loadmodule",
+        "connections": 2,
+        "detected": 2,
+        "missed": 0,
+        "recall": 1.0,
+        "present_in_training": true
+      },
+      {
+        "attack_type": "mailbomb",
+        "connections": 293,
+        "detected": 0,
+        "missed": 293,
+        "recall": 0.0,
+        "present_in_training": false
+      },
+      {
+        "attack_type": "mscan",
+        "connections": 996,
+        "detected": 987,
+        "missed": 9,
+        "recall": 0.9909638554216867,
+        "present_in_training": false
+      },
+      {
+        "attack_type": "multihop",
+        "connections": 18,
+        "detected": 12,
+        "missed": 6,
+        "recall": 0.6666666666666666,
+        "present_in_training": true
+      },
+      {
+        "attack_type": "named",
+        "connections": 17,
+        "detected": 12,
+        "missed": 5,
+        "recall": 0.7058823529411765,
+        "present_in_training": false
+      },
+      {
+        "attack_type": "neptune",
+        "connections": 4657,
+        "detected": 4652,
+        "missed": 5,
+        "recall": 0.9989263474339704,
+        "present_in_training": true
+      },
+      {
+        "attack_type": "nmap",
+        "connections": 73,
+        "detected": 73,
+        "missed": 0,
+        "recall": 1.0,
+        "present_in_training": true
+      },
+      {
+        "attack_type": "perl",
+        "connections": 2,
+        "detected": 2,
+        "missed": 0,
+        "recall": 1.0,
+        "present_in_training": true
+      },
+      {
+        "attack_type": "phf",
+        "connections": 2,
+        "detected": 1,
+        "missed": 1,
+        "recall": 0.5,
+        "present_in_training": true
+      },
+      {
+        "attack_type": "pod",
+        "connections": 41,
+        "detected": 41,
+        "missed": 0,
+        "recall": 1.0,
+        "present_in_training": true
+      },
+      {
+        "attack_type": "portsweep",
+        "connections": 157,
+        "detected": 157,
+        "missed": 0,
+        "recall": 1.0,
+        "present_in_training": true
+      },
+      {
+        "attack_type": "processtable",
+        "connections": 685,
+        "detected": 685,
+        "missed": 0,
+        "recall": 1.0,
+        "present_in_training": false
+      },
+      {
+        "attack_type": "ps",
+        "connections": 15,
+        "detected": 13,
+        "missed": 2,
+        "recall": 0.8666666666666667,
+        "present_in_training": false
+      },
+      {
+        "attack_type": "rootkit",
+        "connections": 13,
+        "detected": 8,
+        "missed": 5,
+        "recall": 0.6153846153846154,
+        "present_in_training": true
+      },
+      {
+        "attack_type": "saint",
+        "connections": 319,
+        "detected": 317,
+        "missed": 2,
+        "recall": 0.9937304075235109,
+        "present_in_training": false
+      },
+      {
+        "attack_type": "satan",
+        "connections": 735,
+        "detected": 735,
+        "missed": 0,
+        "recall": 1.0,
+        "present_in_training": true
+      },
+      {
+        "attack_type": "sendmail",
+        "connections": 14,
+        "detected": 2,
+        "missed": 12,
+        "recall": 0.14285714285714285,
+        "present_in_training": false
+      },
+      {
+        "attack_type": "smurf",
+        "connections": 665,
+        "detected": 665,
+        "missed": 0,
+        "recall": 1.0,
+        "present_in_training": true
+      },
+      {
+        "attack_type": "snmpgetattack",
+        "connections": 178,
+        "detected": 1,
+        "missed": 177,
+        "recall": 0.0056179775280898875,
+        "present_in_training": false
+      },
+      {
+        "attack_type": "snmpguess",
+        "connections": 331,
+        "detected": 331,
+        "missed": 0,
+        "recall": 1.0,
+        "present_in_training": false
+      },
+      {
+        "attack_type": "sqlattack",
+        "connections": 2,
+        "detected": 2,
+        "missed": 0,
+        "recall": 1.0,
+        "present_in_training": false
+      },
+      {
+        "attack_type": "teardrop",
+        "connections": 12,
+        "detected": 12,
+        "missed": 0,
+        "recall": 1.0,
+        "present_in_training": true
+      },
+      {
+        "attack_type": "udpstorm",
+        "connections": 2,
+        "detected": 2,
+        "missed": 0,
+        "recall": 1.0,
+        "present_in_training": false
+      },
+      {
+        "attack_type": "warezmaster",
+        "connections": 944,
+        "detected": 872,
+        "missed": 72,
+        "recall": 0.923728813559322,
+        "present_in_training": true
+      },
+      {
+        "attack_type": "worm",
+        "connections": 2,
+        "detected": 2,
+        "missed": 0,
+        "recall": 1.0,
+        "present_in_training": false
+      },
+      {
+        "attack_type": "xlock",
+        "connections": 9,
+        "detected": 7,
+        "missed": 2,
+        "recall": 0.7777777777777778,
+        "present_in_training": false
+      },
+      {
+        "attack_type": "xsnoop",
+        "connections": 4,
+        "detected": 3,
+        "missed": 1,
+        "recall": 0.75,
+        "present_in_training": false
+      },
+      {
+        "attack_type": "xterm",
+        "connections": 13,
+        "detected": 11,
+        "missed": 2,
+        "recall": 0.8461538461538461,
+        "present_in_training": false
+      }
+    ],
+    "seen_attack_types": {
+      "connections": 9083,
+      "recall": 0.9810635252669823
+    },
+    "unseen_attack_types": {
+      "connections": 3750,
+      "recall": 0.8581333333333333
+    }
+  },
+  "feature_importances": [
+    {
+      "feature": "service",
+      "importance": 0.46632124319218576
+    },
+    {
+      "feature": "src_bytes",
+      "importance": 0.2853648562270942
+    },
+    {
+      "feature": "dst_host_diff_srv_rate",
+      "importance": 0.07354714657631459
+    },
+    {
+      "feature": "duration",
+      "importance": 0.06459272369295048
+    },
+    {
+      "feature": "num_compromised",
+      "importance": 0.03891545656198946
+    },
+    {
+      "feature": "logged_in",
+      "importance": 0.02617804100873639
+    },
+    {
+      "feature": "num_file_creations",
+      "importance": 0.02522405079332279
+    },
+    {
+      "feature": "srv_diff_host_rate",
+      "importance": 0.007415917023320799
+    },
+    {
+      "feature": "srv_serror_rate",
+      "importance": 0.006775741504536224
+    },
+    {
+      "feature": "num_failed_logins",
+      "importance": 0.003620822299832234
+    },
+    {
+      "feature": "num_shells",
+      "importance": 0.002044001119717151
+    }
+  ],
+  "test_security_constraints_met": false,
+  "config": {
+    "population": 16,
+    "iterations": 15,
+    "seed": 3,
+    "train_rows": 20000,
+    "validation_rows": 25195,
+    "trees": 150,
+    "max_depth": null,
+    "accuracy_weight": 0.98,
+    "mutation_rate": 0.02439,
+    "crossover_rate": 0.8,
+    "tournament_size": 3,
+    "inertia": 0.7,
+    "cognitive": 1.5,
+    "social": 1.5,
+    "velocity_limit": 4.0,
+    "min_features": 8,
+    "max_features": 35,
+    "patience": 0,
+    "target_accuracy": null,
+    "target_fitness": null,
+    "max_seconds": 0.0,
+    "chi_k": 12,
+    "final_trees": 150,
+    "attack_threshold": 0.01,
+    "min_attack_recall": 0.98,
+    "max_false_alarm_rate": 0.02,
+    "objective": "attack_aware",
+    "weight_mode": "attack_type_equal",
+    "rf_max_features": 0.5,
+    "exclude_constant": true,
+    "seed_ranked": true
+  },
+  "provenance": "locally_retrained_demo",
+  "evaluation_note": "New Random Forest refit from the committed NSL-KDD data using the published 11-feature mask and recorded configuration. Its locally measured test metrics are separate from the historical calibrated PSO model and do not authenticate its binary.",
+  "dataset_sha256": {
+    "KDDTrain+.txt": "1b86d2f957b33082081bba410fe129b475efebcc13c9014c3f447c8271aadf95",
+    "KDDTest+.txt": "fa46b0935342616aa83b7c2578db355b6a7aaabbc492248172c7a1e8b7ab8f84"
+  }
+}
